@@ -14,13 +14,17 @@
  */
 plugins {
   id 'java'
+  id 'maven-publish'
   id "io.freefair.lombok" version "4.1.6"
+  id 'signing'
 }
 
 group = "com.awazonaws.rdsdata"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.1-TEST"
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
+
+def isReleaseVersion = !version.endsWith('SNAPSHOT')
 
 repositories {
   mavenCentral()
@@ -43,4 +47,60 @@ test {
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << '-parameters'
+}
+
+publishing {
+  repositories {
+    maven {
+      name = 'sonatype'
+      url = isReleaseVersion
+              ? 'https://aws.oss.sonatype.org/service/local/staging/deploy/maven2/'
+              : 'https://aws.oss.sonatype.org/content/repositories/snapshots/'
+      credentials {
+        username findProperty('sonatype.username')
+        password findProperty('sonatype.password')
+      }
+    }
+  }
+
+  publications {
+    mavenJava(MavenPublication) {
+      pom {
+        name = 'RDS Data API Client Library'
+        licenses {
+          license {
+            name = 'The Apache License, Version 2.0'
+            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+        developers {
+          developer {
+            id = 'amazonwebservices'
+            name = 'Amazon Web Services'
+            url = 'https://aws.amazon.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:https://github.com/awslabs/rds-data-api-client-library-java.git'
+          developerConnection = 'scm:git:git@github.com:awslabs/rds-data-api-client-library-java.git'
+          url = 'https://github.com/awslabs/rds-data-api-client-library-java'
+        }
+      }
+
+      from components.java
+    }
+  }
+}
+
+java {
+  withSourcesJar()
+  withJavadocJar()
+}
+
+signing {
+  sign publishing.publications.mavenJava
+}
+
+tasks.withType(Sign) {
+  onlyIf { isReleaseVersion }
 }
