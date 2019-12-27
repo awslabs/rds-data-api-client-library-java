@@ -31,45 +31,45 @@ public class MappingException extends RuntimeException {
         super(message);
     }
 
-    public MappingException(String message, Throwable cause) {
+    private MappingException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public static MappingException noFieldOrSetter(Class<?> clazz, String fieldName) {
+    static MappingException noFieldOrSetter(Class<?> clazz, String fieldName) {
         val message = String.format(ERROR_NO_FIELD_OR_SETTER, clazz.getName(), fieldName);
         return new MappingException(message);
     }
 
-    public static MappingException cannotAccessField(Class<?> clazz, String fieldName) {
+    static MappingException cannotAccessField(Class<?> clazz, String fieldName) {
         val message = String.format(ERROR_CANNOT_ACCESS_FIELD, fieldName, clazz.getName());
         return new MappingException(message);
     }
 
-    public static MappingException cannotCreateInstanceViaNoArgsConstructor(Class<?> clazz) {
+    static MappingException cannotCreateInstanceViaNoArgsConstructor(Class<?> clazz) {
         val message = String.format(ERROR_CANNOT_CREATE_INSTANCE_VIA_NOARGS, clazz.getName());
         return new MappingException(message);
     }
 
-    public static MappingException cannotCreateInstance(Class<?> clazz, Throwable cause) {
+    static MappingException cannotCreateInstance(Class<?> clazz, Throwable cause) {
         val message = String.format(ERROR_CANNOT_CREATE_INSTANCE, clazz.getName());
         return new MappingException(message, cause);
     }
 
-    public static MappingException staticField(Class<?> clazz, String fieldName) {
+    static MappingException staticField(Class<?> clazz, String fieldName) {
         val message = String.format(ERROR_STATIC_FIELD, fieldName, clazz.getName());
         return new MappingException(message);
     }
 
-    public static MappingException cannotSetValue(String fieldName, Throwable cause) {
+    static MappingException cannotSetValue(String fieldName, Throwable cause) {
         val message = String.format(ERROR_CANNOT_SET_VALUE, fieldName);
         return new MappingException(message, cause);
     }
 
-    public static MappingException emptyResultSet() {
+    static MappingException emptyResultSet() {
         return new MappingException(ERROR_EMPTY_RESULT_SET);
     }
 
-    public static MappingException cannotConvertToType(Field field, Class targetType) {
+    static MappingException cannotConvertToType(Field field, Class targetType) {
         val message = String.format(ERROR_CANNOT_CONVERT_TO_TYPE, field.toString(), targetType.toString());
         return new MappingException(message);
     }

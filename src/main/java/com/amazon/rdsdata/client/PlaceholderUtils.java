@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class PlaceholderUtils {
+class PlaceholderUtils {
     static String ERROR_NUMBER_OF_PARAMS_MISMATCH = "Number of placeholders does not match number of parameters";
 
     private static Pattern REGEX_NAMED_PLACEHOLDER = Pattern.compile(":([a-zA-Z0-9_]+)");

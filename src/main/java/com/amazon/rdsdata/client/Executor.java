@@ -33,20 +33,46 @@ public class Executor {
     private List<Object> paramSets = emptyList();
     private String transactionId = ""; // RDS Data API understands empty string as "no transaction"
 
+    /**
+     * Sets a single parameter set
+     * @param param object which fields will be used as a source for parameters
+     * @return a reference to this object so that method calls can be chained together
+     */
     public Executor withParameter(Object param) {
         this.paramSets = singletonList(param);
         return this;
     }
 
+    /**
+     * Sets multiple parameter sets
+     * @param params {@link List} of objects which fields will be used as sources for parameters
+     * @return a reference to this object so that method calls can be chained together
+     */
     public Executor withParamSets(List<Object> params) {
         this.paramSets = params;
         return this;
     }
 
+    /**
+     * Sets multiple parameter sets
+     * @param params vararg array of objects which fields will be sources for parameters
+     * @return a reference to this object so that method calls can be chained together
+     */
     public Executor withParamSets(Object... params) {
         return withParamSets(asList(params));
     }
 
+    /**
+     * Executes the SQL query.
+     *
+     * If only one parameter set was added to this {@link Executor} before, or no parameters at all,
+     * ExecuteStatement API will be called
+     *
+     * If more than one parameter set was added (via <code>withParamSets()</code> methods),
+     * BatchExecuteStatement API will be used
+     *
+     * @return a {@link ExecutionResult} instance
+     */
     public ExecutionResult execute() {
         return paramSets.size() > 1 ? executeAsBatch() : executeAsSingle();
     }
@@ -76,6 +102,11 @@ public class Executor {
         return mapper.map(paramSet);
     }
 
+    /**
+     * Specifies that the query should be executed in a transaction
+     * @param transactionId transaction ID
+     * @return a reference to this object so that method calls can be chained together
+     */
     public Executor withTransactionId(String transactionId) {
         this.transactionId = transactionId;
         return this;

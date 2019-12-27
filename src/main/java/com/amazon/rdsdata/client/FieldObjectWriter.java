@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class FieldObjectWriter<T> extends ObjectWriter<T> {
+class FieldObjectWriter<T> extends ObjectWriter<T> {
     private final Class<T> mapperClass;
     private final List<String> fieldNames;
 

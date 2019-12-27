@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
-public class SetterWriter extends Writer {
+class SetterWriter extends Writer {
     private Object instance;
     private Method setter;
     private String fieldName;

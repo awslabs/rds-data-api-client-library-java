@@ -17,7 +17,7 @@ package com.amazon.rdsdata.client;
 import static com.amazon.rdsdata.client.FieldWriter.fieldWriterFor;
 import static com.amazon.rdsdata.client.SetterWriter.setterWriterFor;
 
-public abstract class Writer {
+abstract class Writer {
     public static Writer forName(Object instance, String fieldName) {
         return setterWriterFor(instance, fieldName)
                 .orElseGet(() -> fieldWriterFor(instance, fieldName)

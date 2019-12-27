@@ -24,7 +24,7 @@ import java.util.Optional;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
-public class FieldWriter extends Writer {
+class FieldWriter extends Writer {
     private Object instance;
     private Class<?> fieldType;
     private Field field;

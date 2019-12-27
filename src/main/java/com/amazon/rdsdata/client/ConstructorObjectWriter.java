@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-public class ConstructorObjectWriter<T> extends ObjectWriter<T> {
+class ConstructorObjectWriter<T> extends ObjectWriter<T> {
     private final Constructor<T> constructor;
     private final Map<String, Integer> indexByName;
 

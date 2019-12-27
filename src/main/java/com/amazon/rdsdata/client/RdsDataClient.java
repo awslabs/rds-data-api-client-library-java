@@ -45,6 +45,10 @@ public class RdsDataClient {
     private String secretArn;
     private String resourceArn;
 
+    /**
+     * Starts a new transaction
+     * @return transaction ID
+     */
     public String beginTransaction() {
         val request = new BeginTransactionRequest()
                 .withDatabase(database)
@@ -54,6 +58,10 @@ public class RdsDataClient {
         return response.getTransactionId();
     }
 
+    /**
+     * Commits the given transaction
+     * @param transactionId transaction ID
+     */
     public void commitTransaction(String transactionId) {
         val request = new CommitTransactionRequest()
                 .withTransactionId(transactionId)
@@ -62,6 +70,10 @@ public class RdsDataClient {
         rdsDataService.commitTransaction(request);
     }
 
+    /**
+     * Rolls back the given transaction
+     * @param transactionId transaction ID
+     */
     public void rollbackTransaction(String transactionId) {
         val request = new RollbackTransactionRequest()
                 .withTransactionId(transactionId)
@@ -70,12 +82,26 @@ public class RdsDataClient {
         rdsDataService.rollbackTransaction(request);
     }
 
+    /**
+     * Creates an {@link Executor} for the given SQL
+     * @param sql SQL statement
+     * @return an {@link Executor} instance
+     * @see Executor
+     */
     public Executor forSql(String sql) {
         checkArgument(!isNullOrEmpty(sql), ERROR_EMPTY_OR_NULL_SQL);
 
         return new Executor(sql, this);
     }
 
+    /**
+     * Creates an {@link Executor} for the given SQL with parameters. For each parameter, the SQL statement must
+     * contain a placeholder "?"
+     * @param sql SQL statement with placeholders
+     * @param params vararg array with parameters
+     * @return an {@link Executor} instance
+     * @see Executor
+     */
     public Executor forSql(String sql, Object... params) {
         checkArgument(!isNullOrEmpty(sql), ERROR_EMPTY_OR_NULL_SQL);
         if (params == null) {

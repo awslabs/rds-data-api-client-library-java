@@ -52,6 +52,13 @@ public class ExecutionResult {
                 .collect(toList());
     }
 
+    /**
+     * Maps the first row from the result set retrieved from RDS Data API to the instance of the specified class.
+     * If the result set is empty, a {@link MappingException} is thrown.
+     * @param mapperClass class to map to
+     * @return an instance of the specified class with the mapped data
+     * @throws MappingException if failed to map RDS Data API results to the specified class
+     */
     public <T> T mapToSingle(Class<T> mapperClass) {
         if (rows.isEmpty()) {
             throw MappingException.emptyResultSet();
@@ -69,6 +76,12 @@ public class ExecutionResult {
         return writer.write(row);
     }
 
+    /**
+     * Maps the result set retrieved from RDS Data API to the list of instances of the specified class.
+     * @param mapperClass class to map to
+     * @return a {@link List} of instances of the specified class with the mapped data
+     * @throws MappingException if failed to map RDS Data API results to the specified class
+     */
     public <T> List<T> mapToList(Class<T> mapperClass) {
         return rows.stream()
                 .map(row -> mapToSingle(mapperClass, fieldNames, row))

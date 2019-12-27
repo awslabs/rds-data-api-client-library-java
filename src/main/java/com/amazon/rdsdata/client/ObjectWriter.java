@@ -14,6 +14,6 @@
  */
 package com.amazon.rdsdata.client;
 
-public abstract class ObjectWriter<T> {
+abstract class ObjectWriter<T> {
     public abstract T write(ExecutionResult.Row row);
 }

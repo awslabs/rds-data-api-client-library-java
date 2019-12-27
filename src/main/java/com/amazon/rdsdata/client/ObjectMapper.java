@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ObjectMapper {
+class ObjectMapper {
     private final Set<String> placeholders;
 
     public ObjectMapper(String sql) {

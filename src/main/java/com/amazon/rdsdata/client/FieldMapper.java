@@ -23,7 +23,7 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @RequiredArgsConstructor
-public class FieldMapper {
+class FieldMapper {
     static String ERROR_FIELD_NOT_FOUND = "Cannot find field or getter corresponding to placeholder '%s' in object '%s'";
     static String ERROR_VOID_RETURN_TYPE_NOT_SUPPORTED = "Void return type is not supported";
 
