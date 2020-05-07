@@ -14,7 +14,7 @@ consume the library using Maven:
 ```xml
 <dependency>
    <groupId>software.amazon.rdsdata</groupId>
-   <artifactId>rdsdata-client-library</artifactId>
+   <artifactId>rds-data-api-client-library-java</artifactId>
    <version>1.0.2</version>
 </dependency>
 ```
