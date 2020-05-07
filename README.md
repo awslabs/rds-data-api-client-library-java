@@ -20,12 +20,12 @@ consume the library using Maven:
 ```
 
 ### Using the Client Library
-Following, you can find some common examples of using the Data API Java client library. These examples assume that you have a table accounts with two columns: accountId and balance. You also have the following data transfer object (DTO).
+Following, you can find some common examples of using the Data API Java client library. These examples assume that you have a table accounts with two columns: accountId and name. You also have the following data transfer object (DTO).
 
 ```java
 public class Account {
-    String accountId;
-    double balance;
+    int accountId;
+    String name;
     // getters and setters omitted
 }  
 ```                               
@@ -33,9 +33,9 @@ public class Account {
 The client library enables you to pass DTOs as input parameters. The following example shows how customer DTOs are mapped to input parameters sets.
 
 ```java
-var account1 = new Account("A-1", 1.1);
-var account2 = new Account("B-2", 100);
-client.forSql("INSERT INTO accounts(accountId, balance) VALUES(:accountId, :balance)")
+var account1 = new Account(1, "John");
+var account2 = new Account(2, "Mary");
+client.forSql("INSERT INTO accounts(accountId, name) VALUES(:accountId, :name)")
          .withParams(account1, account2)
          .execute();   
 ```             
@@ -43,16 +43,16 @@ client.forSql("INSERT INTO accounts(accountId, balance) VALUES(:accountId, :bala
 In some cases, it's easier to work with simple values as input parameters. You can do so with the following syntax.
 
 ```java
-client.forSql("INSERT INTO accounts(accountId, balance) VALUES(:accountId, :balance)")
-         .withParam("accountId", "A-1")
-         .withParam("balance", 12.2)
+client.forSql("INSERT INTO accounts(accountId, name) VALUES(:accountId, :name)")
+         .withParam("accountId", 3)
+         .withParam("name", "Karen")
          .execute();  
 ```            
                 
 The following is another example that works with simple values as input parameters.
 
 ```java
-client.forSql("INSERT INTO accounts(accountId, balance) VALUES(?, ?", "A-1", 12.2)
+client.forSql("INSERT INTO accounts(accountId, name) VALUES(?, ?)", 4, "Peter")
          .execute();    
 ```        
                 
@@ -65,7 +65,7 @@ List<Account> result = client.forSql("SELECT * FROM accounts")
 ```
 
 ```java
-Account result = client.forSql("SELECT * FROM accounts WHERE account_id = '1'")
+Account result = client.forSql("SELECT * FROM accounts WHERE account_id = 1")
           .execute()
           .mapToSingle(Account.class);          
 ```                
