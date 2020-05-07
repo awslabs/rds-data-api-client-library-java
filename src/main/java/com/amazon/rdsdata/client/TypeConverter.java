@@ -39,7 +39,7 @@ class TypeConverter {
     static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     static Field toField(Object o) {
-        if (o == null) {
+        if (o == null || o == FieldMapper.NULL) {
             return new Field().withIsNull(true);
         } else if (o instanceof Byte || o instanceof Integer || o instanceof Long) {
             return new Field().withLongValue(((Number) o).longValue());

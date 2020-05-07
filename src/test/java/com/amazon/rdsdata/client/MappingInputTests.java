@@ -61,6 +61,27 @@ class MappingInputTests extends TestBase {
     }
 
     @Test
+    void shouldSupportNullValuesFromGetters() {
+        val dto = new NullGetter();
+
+        client.forSql("INSERT INTO tbl1(a) VALUES(:data)")
+                .withParamSets(dto)
+                .execute();
+
+        val request = captureRequest();
+        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+                new SqlParameter()
+                        .withName("data")
+                        .withValue(new Field().withIsNull(true))
+        );
+    }
+
+    @SuppressWarnings("unused")
+    private static class NullGetter {
+        public String getData() { return null; }
+    }
+
+    @Test
     void shouldMapDtoViaFields() {
         val dto = new Fields();
 
@@ -83,6 +104,27 @@ class MappingInputTests extends TestBase {
     private static class Fields {
         private final String firstName = "John";
         private final String lastName = "Doe";
+    }
+
+    @Test
+    void shouldSupportNullValuesFromFields() {
+        val dto = new NullField();
+
+        client.forSql("INSERT INTO tbl1(a) VALUES(:data)")
+                .withParamSets(dto)
+                .execute();
+
+        val request = captureRequest();
+        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+                new SqlParameter()
+                        .withName("data")
+                        .withValue(new Field().withIsNull(true))
+        );
+    }
+
+    @SuppressWarnings("unused")
+    private static class NullField {
+        private final String data = null;
     }
 
     @Test

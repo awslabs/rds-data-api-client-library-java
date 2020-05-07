@@ -24,6 +24,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 @RequiredArgsConstructor
 class FieldMapper {
+    static Object NULL = new Object();
+
     static String ERROR_FIELD_NOT_FOUND = "Cannot find field or getter corresponding to placeholder '%s' in object '%s'";
     static String ERROR_VOID_RETURN_TYPE_NOT_SUPPORTED = "Void return type is not supported";
 
@@ -45,7 +47,7 @@ class FieldMapper {
             val field = object.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             val result = field.get(object);
-            return Optional.of(result);
+            return Optional.of(result == null ? NULL : result);
         } catch (NoSuchFieldException e) {
             return Optional.empty();
         } catch (IllegalAccessException e) {
@@ -61,7 +63,7 @@ class FieldMapper {
 
             method.setAccessible(true);
             val result = method.invoke(object);
-            return Optional.of(result);
+            return Optional.of(result == null ? NULL : result);
         } catch (NoSuchMethodException e) {
             return Optional.empty();
         } catch (IllegalAccessException | InvocationTargetException e) {
