@@ -35,12 +35,14 @@ import static org.mockito.Mockito.when;
 
 @UtilityClass
 public class MockingTools {
-    public static void mockReturnValue(AWSRDSData mockClient, ColumnDefinition... columns) {
-        mockReturnValues(mockClient, asList(columns));
+    public static void mockReturnValue(AWSRDSData mockClient, Long numberOfRecordsUpdated,
+                                       ColumnDefinition... columns) {
+        mockReturnValues(mockClient, numberOfRecordsUpdated, asList(columns));
     }
 
     @SafeVarargs
-    public static void mockReturnValues(AWSRDSData mockClient, List<ColumnDefinition>... rows) {
+    public static void mockReturnValues(AWSRDSData mockClient, Long numberOfRecordsUpdated,
+                                        List<ColumnDefinition>... rows) {
         List<ColumnMetadata> metadataList = rows.length > 0 ? buildColumnMetadataList(rows[0]) : emptyList();
 
         val recordsList = Stream.of(rows)
@@ -52,7 +54,8 @@ public class MockingTools {
         when(mockClient.executeStatement(any(ExecuteStatementRequest.class)))
                 .thenReturn(new ExecuteStatementResult()
                         .withColumnMetadata(metadataList)
-                        .withRecords(recordsList));
+                        .withRecords(recordsList)
+                        .withNumberOfRecordsUpdated(numberOfRecordsUpdated));
     }
 
     private List<ColumnMetadata> buildColumnMetadataList(List<ColumnDefinition> columns) {
@@ -69,7 +72,8 @@ public class MockingTools {
         when(mockClient.executeStatement(any(ExecuteStatementRequest.class)))
                 .thenReturn(new ExecuteStatementResult()
                         .withColumnMetadata((Collection) null)
-                        .withRecords((Collection) null));
+                        .withRecords((Collection) null)
+                        .withNumberOfRecordsUpdated(null));
     }
 
     @AllArgsConstructor

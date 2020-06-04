@@ -17,6 +17,7 @@ package com.amazon.rdsdata.client;
 import com.amazon.rdsdata.client.testutil.TestBase;
 import com.amazonaws.services.rdsdata.model.Field;
 import lombok.val;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import static com.amazon.rdsdata.client.MappingException.ERROR_CANNOT_CREATE_INSTANCE_VIA_NOARGS;
@@ -27,12 +28,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MappingOutputViaAllArgsConstructorTests extends TestBase {
     @Test
     void shouldMapViaAllArgsConstructor() {
-        mockReturnValue(
+        mockReturnValue(NUMBER_OF_RECORDS_UPDATED,
                 mockColumn("stringValue", new Field().withStringValue("apple")),
                 mockColumn("intValue", new Field().withLongValue(15L)));
 
-        val result = client.forSql("SELECT *").execute().mapToSingle(ConstructorWithParameterNames.class);
+        val executionResult = client.forSql("SELECT *").execute();
+        assertEquals(NUMBER_OF_RECORDS_UPDATED, executionResult.getNumberOfRecordsUpdated());
 
+        val result = executionResult.mapToSingle(ConstructorWithParameterNames.class);
         assertThat(result.result).isEqualTo("apple15");
     }
 

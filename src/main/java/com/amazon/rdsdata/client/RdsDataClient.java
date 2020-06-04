@@ -126,7 +126,8 @@ public class RdsDataClient {
                         .withDecimalReturnType(DecimalReturnType.STRING))
                 .withIncludeResultMetadata(true);
         val response = rdsDataService.executeStatement(request);
-        return new ExecutionResult(response.getColumnMetadata(), response.getRecords());
+        return new ExecutionResult(response.getColumnMetadata(), response.getRecords(),
+                response.getNumberOfRecordsUpdated());
     }
 
     ExecutionResult batchExecuteStatement(String transactionId, String sql, List<Map<String, Object>> params) {
@@ -138,7 +139,7 @@ public class RdsDataClient {
                 .withTransactionId(transactionId)
                 .withParameterSets(toSqlParameterSets(params));
         rdsDataService.batchExecuteStatement(request);
-        return new ExecutionResult(emptyList(), emptyList());
+        return new ExecutionResult(emptyList(), emptyList(), 0L);
     }
 
     private List<SqlParameter> toSqlParameterList(Map<String, Object> params) {

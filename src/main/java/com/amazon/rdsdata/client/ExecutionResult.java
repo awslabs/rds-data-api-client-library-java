@@ -26,10 +26,12 @@ import static java.util.stream.Collectors.toList;
 public class ExecutionResult {
     private List<String> fieldNames;
     private List<Row> rows;
+    private Long numberOfRecordsUpdated;
 
-    ExecutionResult(List<ColumnMetadata> metadata, List<List<Field>> fields) {
+    ExecutionResult(List<ColumnMetadata> metadata, List<List<Field>> fields, Long numberOfRecordsUpdated) {
         this.fieldNames = extractFieldNames(metadata);
         this.rows = convertToRows(fields);
+        this.numberOfRecordsUpdated = numberOfRecordsUpdated;
     }
 
     private List<String> extractFieldNames(List<ColumnMetadata> metadata) {
@@ -50,6 +52,15 @@ public class ExecutionResult {
         return records.stream()
                 .map(Row::new)
                 .collect(toList());
+    }
+
+    /**
+     * Will return the number of records inserted/updated by the query.
+     *
+     * @return the number of records updated.
+     */
+    public Long getNumberOfRecordsUpdated() {
+        return numberOfRecordsUpdated;
     }
 
     /**

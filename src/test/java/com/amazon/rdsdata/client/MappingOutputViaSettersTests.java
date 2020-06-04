@@ -18,6 +18,7 @@ import com.amazon.rdsdata.client.testutil.TestBase;
 import com.amazonaws.services.rdsdata.model.Field;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import static com.amazon.rdsdata.client.MappingException.ERROR_NO_FIELD_OR_SETTER;
@@ -28,12 +29,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MappingOutputViaSettersTests extends TestBase {
     @Test
     void shouldMapToFieldsOfDifferentType() {
-        mockReturnValue(mockColumn("stringValue", new Field().withStringValue("apple")));
+        mockReturnValue(NUMBER_OF_RECORDS_UPDATED, mockColumn("stringValue", new Field().withStringValue("apple")));
 
-        val result = client.forSql("SELECT *")
-                .execute()
-                .mapToSingle(Setter.class);
+        val executionResult = client.forSql("SELECT *").execute();
+        assertEquals(NUMBER_OF_RECORDS_UPDATED, executionResult.getNumberOfRecordsUpdated());
 
+        val result = executionResult.mapToSingle(Setter.class);
         assertThat(result.value).isEqualTo("apple");
     }
 
