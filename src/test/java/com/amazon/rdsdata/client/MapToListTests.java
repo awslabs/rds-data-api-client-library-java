@@ -19,7 +19,6 @@ import com.amazonaws.services.rdsdata.model.Field;
 import com.google.common.collect.ImmutableList;
 import lombok.Value;
 import lombok.val;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import static com.amazon.rdsdata.client.testutil.MockingTools.mockColumn;
@@ -28,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MapToListTests extends TestBase {
     @Test
     void shouldMapViaAllArgsConstructor() {
-        mockReturnValues(NUMBER_OF_RECORDS_UPDATED,
+        mockReturnValues(
                 ImmutableList.of( // first row
                         mockColumn("intField", new Field().withLongValue(1L)),
                         mockColumn("stringField", new Field().withStringValue("hello"))
@@ -37,10 +36,10 @@ public class MapToListTests extends TestBase {
                         mockColumn("stringField", new Field().withStringValue("world"))
                 ));
 
-        val executionResult = client.forSql("SELECT *").execute();
-        assertEquals(NUMBER_OF_RECORDS_UPDATED, executionResult.getNumberOfRecordsUpdated());
+        val result = client.forSql("SELECT *")
+                .execute()
+                .mapToList(TestBean.class);
 
-        val result = executionResult.mapToList(TestBean.class);
         assertThat(result).containsExactly(
                 new TestBean(1, "hello"),
                 new TestBean(2, "world"));

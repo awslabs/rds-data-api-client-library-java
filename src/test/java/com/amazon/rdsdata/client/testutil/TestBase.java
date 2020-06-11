@@ -34,7 +34,6 @@ public class TestBase {
     protected static final String SAMPLE_DB = "mydb";
     protected static final String SAMPLE_RESOURCE_ARN = "arn:resource";
     protected static final String SAMPLE_SECRET_ARN = "arn:secret";
-    protected static final Long NUMBER_OF_RECORDS_UPDATED = 0L; // For reads, the number of updated records will be 0.
 
     protected RdsDataClient client;
     protected AWSRDSData originalClient = mock(AWSRDSData.class);
@@ -50,22 +49,17 @@ public class TestBase {
     }
 
     protected void mockReturnValue(MockingTools.ColumnDefinition... columns) {
-        MockingTools.mockReturnValue(originalClient, NUMBER_OF_RECORDS_UPDATED, columns);
+        MockingTools.mockReturnValue(originalClient, 0L, columns);
     }
 
 
-    protected void mockReturnValue(Long numberOfRecordsUpdated, MockingTools.ColumnDefinition... columns) {
+    protected void mockReturnValue(long numberOfRecordsUpdated, MockingTools.ColumnDefinition... columns) {
         MockingTools.mockReturnValue(originalClient, numberOfRecordsUpdated, columns);
     }
 
     @SafeVarargs
     protected final void mockReturnValues(List<MockingTools.ColumnDefinition>... rows) {
-        MockingTools.mockReturnValues(originalClient, NUMBER_OF_RECORDS_UPDATED, rows);
-    }
-
-    @SafeVarargs
-    protected final void mockReturnValues(Long numberOfRecordsUpdated, List<MockingTools.ColumnDefinition>... rows) {
-        MockingTools.mockReturnValues(originalClient, numberOfRecordsUpdated, rows);
+        MockingTools.mockReturnValues(originalClient, 0L, rows);
     }
 
     protected final void returnNullMetadataAndResultSet() {

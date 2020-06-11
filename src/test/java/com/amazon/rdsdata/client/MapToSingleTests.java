@@ -18,7 +18,6 @@ import com.amazon.rdsdata.client.testutil.TestBase;
 import com.amazonaws.services.rdsdata.model.Field;
 import lombok.Value;
 import lombok.val;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import static com.amazon.rdsdata.client.testutil.MockingTools.mockColumn;
@@ -29,14 +28,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MapToSingleTests extends TestBase {
     @Test
     void shouldMapToSingleObject() {
-        mockReturnValue(NUMBER_OF_RECORDS_UPDATED,
+        mockReturnValue(
                 mockColumn("intField", new Field().withLongValue(1L)),
                 mockColumn("stringField", new Field().withStringValue("hello")));
 
-        val executionResult = client.forSql("SELECT *").execute();
-        assertEquals(NUMBER_OF_RECORDS_UPDATED, executionResult.getNumberOfRecordsUpdated());
-
-        val result = executionResult.mapToSingle(TestBean.class);
+        val result = client.forSql("SELECT *")
+                .execute()
+                .mapToSingle(TestBean.class);
         assertThat(result).isEqualTo(new TestBean(1, "hello"));
     }
 

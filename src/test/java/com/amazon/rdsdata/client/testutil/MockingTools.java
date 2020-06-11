@@ -35,13 +35,15 @@ import static org.mockito.Mockito.when;
 
 @UtilityClass
 public class MockingTools {
-    public static void mockReturnValue(AWSRDSData mockClient, Long numberOfRecordsUpdated,
+    public static void mockReturnValue(AWSRDSData mockClient,
+                                       long numberOfRecordsUpdated,
                                        ColumnDefinition... columns) {
         mockReturnValues(mockClient, numberOfRecordsUpdated, asList(columns));
     }
 
     @SafeVarargs
-    public static void mockReturnValues(AWSRDSData mockClient, Long numberOfRecordsUpdated,
+    public static void mockReturnValues(AWSRDSData mockClient,
+                                        long numberOfRecordsUpdated,
                                         List<ColumnDefinition>... rows) {
         List<ColumnMetadata> metadataList = rows.length > 0 ? buildColumnMetadataList(rows[0]) : emptyList();
 

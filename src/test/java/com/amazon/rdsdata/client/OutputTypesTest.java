@@ -18,7 +18,6 @@ import com.amazon.rdsdata.client.testutil.TestBase;
 import com.amazonaws.services.rdsdata.model.Field;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -34,7 +33,7 @@ public class OutputTypesTest extends TestBase {
     @Test
     void shouldMapToFieldsOfDifferentType() {
         val bytes = new byte[] {1, 2, 3};
-        mockReturnValue(NUMBER_OF_RECORDS_UPDATED,
+        mockReturnValue(
                 mockColumn("stringValue", new Field().withStringValue("apple")),
                 mockColumn("byteValue", new Field().withLongValue(3L)),
                 mockColumn("intValue", new Field().withLongValue(4L)),
@@ -48,10 +47,9 @@ public class OutputTypesTest extends TestBase {
                 mockColumn("nullField", new Field().withIsNull(true))
         );
 
-        val executionResult = client.forSql("SELECT *").execute();
-        assertEquals(NUMBER_OF_RECORDS_UPDATED, executionResult.getNumberOfRecordsUpdated());
-
-        val result = executionResult.mapToSingle(FieldsOfDifferentTypes.class);
+        val result = client.forSql("SELECT *")
+                .execute()
+                .mapToSingle(FieldsOfDifferentTypes.class);
 
         assertThat(result.stringValue).isEqualTo("apple");
         assertThat(result.byteValue).isEqualTo((byte) 3);

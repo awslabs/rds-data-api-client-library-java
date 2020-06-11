@@ -19,7 +19,6 @@ import com.amazonaws.services.rdsdata.model.Field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import static com.amazon.rdsdata.client.MappingException.ERROR_CANNOT_ACCESS_FIELD;
@@ -35,12 +34,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MappingOutputViaFieldsTests extends TestBase {
     @Test
     void shouldMapToClassWithPublicFields() {
-        mockReturnValue(NUMBER_OF_RECORDS_UPDATED, mockColumn("value", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("value", new Field().withStringValue("apple")));
 
-        val executionResult = client.forSql("SELECT *").execute();
-        assertEquals(NUMBER_OF_RECORDS_UPDATED, executionResult.getNumberOfRecordsUpdated());
-
-        val result = executionResult.mapToSingle(PublicFields.class);
+        val result = client.forSql("SELECT *")
+                .execute()
+                .mapToSingle(PublicFields.class);
         assertThat(result.value).isEqualTo("apple");
     }
 
