@@ -70,7 +70,8 @@ public class InputTypesTest extends TestBase {
                 arguments(2.5d, new Field().withDoubleValue(2.5d)),
                 arguments("hello", new Field().withStringValue("hello")),
                 arguments(bytes, new Field().withBlobValue(ByteBuffer.wrap(bytes))),
-                arguments(true, new Field().withBooleanValue(true))
+                arguments(true, new Field().withBooleanValue(true)),
+                arguments(EnumType.VALUE_1, new Field().withStringValue("VALUE_1"))
         );
     }
 
@@ -130,5 +131,9 @@ public class InputTypesTest extends TestBase {
         assertThatThrownBy(() -> client.forSql("INSERT INTO tbl1(a) VALUES(?)", new Object()).execute())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith(ERROR_PARAMETER_OF_UNKNOWN_TYPE);
+    }
+
+    private enum EnumType {
+        VALUE_1
     }
 }

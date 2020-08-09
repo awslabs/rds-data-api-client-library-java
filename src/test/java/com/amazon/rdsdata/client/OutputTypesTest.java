@@ -44,7 +44,8 @@ public class OutputTypesTest extends TestBase {
                 mockColumn("floatValue", new Field().withDoubleValue(2.5d)),
                 mockColumn("blob", new Field().withBlobValue(ByteBuffer.wrap(bytes))),
                 mockColumn("booleanValue", new Field().withBooleanValue(true)),
-                mockColumn("nullField", new Field().withIsNull(true))
+                mockColumn("nullField", new Field().withIsNull(true)),
+                mockColumn("enumType", new Field().withStringValue("VALUE_1"))
         );
 
         val result = client.forSql("SELECT *")
@@ -62,6 +63,7 @@ public class OutputTypesTest extends TestBase {
         assertThat(result.blob).isEqualTo(bytes);
         assertThat(result.booleanValue).isEqualTo(true);
         assertThat(result.nullField).isNull();
+        assertThat(result.enumType).isEqualTo(EnumType.VALUE_1);
     }
 
     @NoArgsConstructor
@@ -77,6 +79,7 @@ public class OutputTypesTest extends TestBase {
         public byte[] blob;
         public boolean booleanValue;
         public String nullField;
+        public EnumType enumType;
     }
 
     @Test
@@ -138,5 +141,9 @@ public class OutputTypesTest extends TestBase {
                 .mapToSingle(DtoWithDecimalAndInteger.class))
                 .isInstanceOf(MappingException.class)
                 .hasMessage(ERROR_CANNOT_CONVERT_TO_TYPE, field, BigInteger.class.toString());
+    }
+
+    private enum EnumType {
+        VALUE_1
     }
 }
