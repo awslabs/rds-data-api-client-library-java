@@ -61,6 +61,8 @@ class TypeConverter {
             return new Field().withStringValue(DATE_FORMATTER.format((LocalDate) o));
         } else if (o instanceof LocalTime) {
             return new Field().withStringValue(TIME_FORMATTER.format((LocalTime) o));
+        } else if (o instanceof Enum) {
+            return new Field().withStringValue(((Enum<?>) o).name());
         }
 
         throw new IllegalArgumentException(ERROR_PARAMETER_OF_UNKNOWN_TYPE + o.getClass().getName());
@@ -80,6 +82,7 @@ class TypeConverter {
         return Optional.empty();
     }
 
+    @SuppressWarnings("unchecked")
     static Object fromField(Field field, Class<?> type) {
         // TODO: Class comparison by == (or .equals) may not work if classes belong to different classloaders
         if (field.isNull() != null && field.isNull()) {
@@ -106,6 +109,8 @@ class TypeConverter {
             return toBigDecimal(field);
         } else if (type == BigInteger.class) {
             return toBigInteger(field);
+        } else if (Enum.class.isAssignableFrom(type)) {
+            return Enum.valueOf((Class<? extends Enum>) type, field.getStringValue());
         }
 
         // TODO: handle this case
