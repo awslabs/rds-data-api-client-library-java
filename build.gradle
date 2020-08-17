@@ -15,7 +15,7 @@
 plugins {
   id 'java'
   id 'maven-publish'
-  id "io.freefair.lombok" version "4.1.6"
+  id "io.freefair.lombok" version "5.1.1"
   id 'signing'
 }
 
