@@ -19,7 +19,7 @@ import com.amazonaws.services.rdsdata.model.ColumnMetadata;
 import com.amazonaws.services.rdsdata.model.ExecuteStatementRequest;
 import com.amazonaws.services.rdsdata.model.ExecuteStatementResult;
 import com.amazonaws.services.rdsdata.model.Field;
-import lombok.AllArgsConstructor;
+import lombok.Value;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
@@ -62,12 +62,21 @@ public class MockingTools {
 
     private List<ColumnMetadata> buildColumnMetadataList(List<ColumnDefinition> columns) {
         return columns.stream()
-                .map(c -> new ColumnMetadata().withName(c.name))
+                .map(ColumnDefinition::getMetadata)
                 .collect(toList());
     }
 
     public static ColumnDefinition mockColumn(String name, Field field) {
-        return new ColumnDefinition(name, field);
+        val metadata = new ColumnMetadata()
+            .withName(name);
+        return new ColumnDefinition(metadata, field);
+    }
+
+    public static ColumnDefinition mockColumn(String name, String label, Field field) {
+        val metadata = new ColumnMetadata()
+            .withName(name)
+            .withLabel(label);
+        return new ColumnDefinition(metadata, field);
     }
 
     public static void returnNullMetadataAndResultSet(AWSRDSData mockClient) {
@@ -78,9 +87,9 @@ public class MockingTools {
                         .withNumberOfRecordsUpdated(null));
     }
 
-    @AllArgsConstructor
+    @Value
     public static class ColumnDefinition {
-        private String name;
+        private ColumnMetadata metadata;
         private Field field;
     }
 }

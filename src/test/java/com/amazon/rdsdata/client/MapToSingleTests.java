@@ -35,6 +35,7 @@ public class MapToSingleTests extends TestBase {
         val result = client.forSql("SELECT *")
                 .execute()
                 .mapToSingle(TestBean.class);
+
         assertThat(result).isEqualTo(new TestBean(1, "hello"));
     }
 
@@ -61,5 +62,20 @@ public class MapToSingleTests extends TestBase {
         assertThatCode(() -> client.forSql("INSERT INTO tbl VALUES(1)").execute())
                 .doesNotThrowAnyException();
     }
+
+  @Test
+  void shouldUseLabelIfConfigured() {
+    mockReturnValue(
+        mockColumn("int_name", "intField", new Field().withLongValue(1L)),
+        mockColumn("string_name", "stringField", new Field().withStringValue("hello")));
+
+    val result = client
+        .withMappingOptions(MappingOptions.DEFAULT.withUseLabelForMapping(true))
+        .forSql("INSERT INTO tbl VALUES(1)")
+        .execute()
+        .mapToSingle(TestBean.class);
+
+      assertThat(result).isEqualTo(new TestBean(1, "hello"));
+  }
 
 }

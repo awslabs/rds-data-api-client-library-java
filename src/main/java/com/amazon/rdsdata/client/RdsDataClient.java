@@ -24,12 +24,14 @@ import com.amazonaws.services.rdsdata.model.ResultSetOptions;
 import com.amazonaws.services.rdsdata.model.RollbackTransactionRequest;
 import com.amazonaws.services.rdsdata.model.SqlParameter;
 import lombok.Builder;
+import lombok.With;
 import lombok.val;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.amazon.rdsdata.client.MappingOptions.DEFAULT;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
@@ -44,6 +46,9 @@ public class RdsDataClient {
     private String database;
     private String secretArn;
     private String resourceArn;
+
+    @Builder.Default
+    @With private MappingOptions mappingOptions = DEFAULT;
 
     /**
      * Starts a new transaction
@@ -125,9 +130,13 @@ public class RdsDataClient {
                 .withResultSetOptions(new ResultSetOptions()
                         .withDecimalReturnType(DecimalReturnType.STRING))
                 .withIncludeResultMetadata(true);
+
         val response = rdsDataService.executeStatement(request);
-        return new ExecutionResult(response.getColumnMetadata(), response.getRecords(),
-                response.getNumberOfRecordsUpdated());
+
+        return new ExecutionResult(response.getColumnMetadata(),
+            response.getRecords(),
+            response.getNumberOfRecordsUpdated(),
+            mappingOptions);
     }
 
     ExecutionResult batchExecuteStatement(String transactionId, String sql, List<Map<String, Object>> params) {
@@ -139,7 +148,7 @@ public class RdsDataClient {
                 .withTransactionId(transactionId)
                 .withParameterSets(toSqlParameterSets(params));
         rdsDataService.batchExecuteStatement(request);
-        return new ExecutionResult(emptyList(), emptyList(), 0L);
+        return new ExecutionResult(emptyList(), emptyList(), 0L, mappingOptions);
     }
 
     private List<SqlParameter> toSqlParameterList(Map<String, Object> params) {
@@ -158,7 +167,7 @@ public class RdsDataClient {
 
         TypeConverter.getTypeHint(value)
                 .ifPresent(hint -> parameter.setTypeHint(hint.name()));
-        
+
         return parameter;
     }
 

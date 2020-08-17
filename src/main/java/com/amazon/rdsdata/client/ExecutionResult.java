@@ -28,20 +28,29 @@ public class ExecutionResult {
     private List<Row> rows;
     private Long numberOfRecordsUpdated;
 
-    ExecutionResult(List<ColumnMetadata> metadata, List<List<Field>> fields, Long numberOfRecordsUpdated) {
-        this.fieldNames = extractFieldNames(metadata);
+    ExecutionResult(List<ColumnMetadata> metadata,
+                    List<List<Field>> fields,
+                    Long numberOfRecordsUpdated,
+                    MappingOptions mappingOptions) {
+        this.fieldNames = extractFieldNames(metadata, mappingOptions);
         this.rows = convertToRows(fields);
         this.numberOfRecordsUpdated = numberOfRecordsUpdated;
     }
 
-    private List<String> extractFieldNames(List<ColumnMetadata> metadata) {
+    private List<String> extractFieldNames(List<ColumnMetadata> metadata, MappingOptions mappingOptions) {
         if (metadata == null) {
             return emptyList();
         }
 
         return metadata.stream()
-                .map(ColumnMetadata::getName)
+                .map(entry -> getFieldName(entry, mappingOptions))
                 .collect(toList());
+    }
+
+    private String getFieldName(ColumnMetadata columnMetadata, MappingOptions mappingOptions) {
+        if (mappingOptions.useLabelForMapping)
+            return columnMetadata.getLabel();
+        return columnMetadata.getName();
     }
 
     private List<Row> convertToRows(List<List<Field>> records) {
