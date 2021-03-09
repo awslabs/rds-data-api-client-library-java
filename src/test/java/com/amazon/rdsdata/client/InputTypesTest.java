@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.amazon.rdsdata.client.TypeConverter.DATE_FORMATTER;
@@ -93,12 +94,15 @@ public class InputTypesTest extends TestBase {
     @SuppressWarnings("RedundantCast")
     private static Stream<Arguments> typesThatNeedHints() {
         val now = LocalDateTime.now();
+        val uuid = UUID.randomUUID();
         return Stream.of(
                 arguments(BigDecimal.valueOf(1.5), new Field().withStringValue("1.5"), "DECIMAL"),
                 arguments(BigInteger.valueOf(15), new Field().withStringValue("15"), "DECIMAL"),
                 arguments(now, new Field().withStringValue(DATE_TIME_FORMATTER.format(now)), "TIMESTAMP"),
                 arguments(now.toLocalDate(), new Field().withStringValue(DATE_FORMATTER.format(now.toLocalDate())), "DATE"),
-                arguments(now.toLocalTime(), new Field().withStringValue(TIME_FORMATTER.format(now.toLocalTime())), "TIME")
+                arguments(now.toLocalTime(), new Field().withStringValue(TIME_FORMATTER.format(now.toLocalTime())), "TIME"),
+                arguments(uuid, new Field().withStringValue(uuid.toString()), "UUID")
+
         );
     }
 

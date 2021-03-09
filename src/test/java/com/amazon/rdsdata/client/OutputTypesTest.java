@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 import static com.amazon.rdsdata.client.MappingException.ERROR_CANNOT_CONVERT_TO_TYPE;
 import static com.amazon.rdsdata.client.testutil.MockingTools.mockColumn;
@@ -33,6 +34,7 @@ public class OutputTypesTest extends TestBase {
     @Test
     void shouldMapToFieldsOfDifferentType() {
         val bytes = new byte[] {1, 2, 3};
+        val uuid = UUID.randomUUID();
         mockReturnValue(
                 mockColumn("stringValue", new Field().withStringValue("apple")),
                 mockColumn("byteValue", new Field().withLongValue(3L)),
@@ -45,7 +47,8 @@ public class OutputTypesTest extends TestBase {
                 mockColumn("blob", new Field().withBlobValue(ByteBuffer.wrap(bytes))),
                 mockColumn("booleanValue", new Field().withBooleanValue(true)),
                 mockColumn("nullField", new Field().withIsNull(true)),
-                mockColumn("enumType", new Field().withStringValue("VALUE_1"))
+                mockColumn("enumType", new Field().withStringValue("VALUE_1")),
+                mockColumn("uuid", new Field().withStringValue(uuid.toString()))
         );
 
         val result = client.forSql("SELECT *")
@@ -64,6 +67,7 @@ public class OutputTypesTest extends TestBase {
         assertThat(result.booleanValue).isEqualTo(true);
         assertThat(result.nullField).isNull();
         assertThat(result.enumType).isEqualTo(EnumType.VALUE_1);
+        assertThat(result.uuid).isEqualTo(uuid);
     }
 
     @NoArgsConstructor
@@ -80,6 +84,7 @@ public class OutputTypesTest extends TestBase {
         public boolean booleanValue;
         public String nullField;
         public EnumType enumType;
+        public UUID uuid;
     }
 
     @Test

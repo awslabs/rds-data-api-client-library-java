@@ -25,11 +25,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.amazonaws.services.rdsdata.model.TypeHint.DATE;
 import static com.amazonaws.services.rdsdata.model.TypeHint.DECIMAL;
 import static com.amazonaws.services.rdsdata.model.TypeHint.TIME;
 import static com.amazonaws.services.rdsdata.model.TypeHint.TIMESTAMP;
+import static com.amazonaws.services.rdsdata.model.TypeHint.UUID;
 
 class TypeConverter {
     static String ERROR_PARAMETER_OF_UNKNOWN_TYPE = "Unknown parameter type: ";
@@ -63,6 +65,8 @@ class TypeConverter {
             return new Field().withStringValue(TIME_FORMATTER.format((LocalTime) o));
         } else if (o instanceof Enum) {
             return new Field().withStringValue(((Enum<?>) o).name());
+        } else if (o instanceof UUID) {
+            return new Field().withStringValue(o.toString());
         }
 
         throw new IllegalArgumentException(ERROR_PARAMETER_OF_UNKNOWN_TYPE + o.getClass().getName());
@@ -77,6 +81,8 @@ class TypeConverter {
             return Optional.of(DATE);
         } else if (o instanceof LocalTime) {
             return Optional.of(TIME);
+        } else if (o instanceof UUID) {
+            return Optional.of(UUID);
         }
 
         return Optional.empty();
@@ -111,6 +117,8 @@ class TypeConverter {
             return toBigInteger(field);
         } else if (Enum.class.isAssignableFrom(type)) {
             return Enum.valueOf((Class<? extends Enum>) type, field.getStringValue());
+        } else if (type == UUID.class) {
+            return java.util.UUID.fromString(field.getStringValue());
         }
 
         // TODO: handle this case
