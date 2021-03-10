@@ -17,6 +17,7 @@ package com.amazon.rdsdata.client;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +61,28 @@ public class Executor {
      */
     public Executor withParamSets(Object... params) {
         return withParamSets(asList(params));
+    }
+
+    /**
+     * Sets a single named parameter.
+     * Should not be combined with {@link #withParameter(Object)} and {@link #withParamSets(Object...)}
+     * @param parameterName Name of the parameter
+     * @param value value (can be of any supported type)
+     * @return a reference to this object so that method calls can be chained together
+     */
+    public Executor withParameter(String parameterName, Object value) {
+        if (paramSets.isEmpty()) {
+            paramSets = singletonList(new HashMap<String, Object>());
+        }
+
+        val firstParamSet = paramSets.get(0);
+        if (!(firstParamSet instanceof Map)) {
+            throw new IllegalArgumentException("Parameters are already supplied");
+        }
+
+        //noinspection unchecked
+        ((Map<String, Object>) paramSets.get(0)).put(parameterName, value);
+        return this;
     }
 
     /**
