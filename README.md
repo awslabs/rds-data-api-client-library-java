@@ -36,7 +36,7 @@ The client library enables you to pass DTOs as input parameters. The following e
 var account1 = new Account(1, "John");
 var account2 = new Account(2, "Mary");
 client.forSql("INSERT INTO accounts(accountId, name) VALUES(:accountId, :name)")
-         .withParams(account1, account2)
+         .withParamSets(account1, account2)
          .execute();   
 ```             
                 
@@ -44,8 +44,8 @@ In some cases, it's easier to work with simple values as input parameters. You c
 
 ```java
 client.forSql("INSERT INTO accounts(accountId, name) VALUES(:accountId, :name)")
-         .withParam("accountId", 3)
-         .withParam("name", "Karen")
+         .withParameter("accountId", 3)
+         .withParameter("name", "Karen")
          .execute();  
 ```            
                 
