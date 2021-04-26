@@ -126,4 +126,19 @@ public class MappingOutputViaSettersTests extends TestBase {
         public String field;
         public void setField(String value) { this.field = "orange"; }
     }
+
+    @Test
+    void shouldThrowExceptionIfMoreThanOneSetter() {
+        mockReturnValue(mockColumn("field", new Field().withLongValue(123L)));
+
+        assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(AmbiguousSetter.class))
+            .isInstanceOf(MappingException.class)
+            .hasMessageContaining("Ambiguous setter");
+    }
+
+    @SuppressWarnings("unused")
+    public static class AmbiguousSetter {
+        public void setField(Integer value) { }
+        public void setField(Long value) { }
+    }
 }

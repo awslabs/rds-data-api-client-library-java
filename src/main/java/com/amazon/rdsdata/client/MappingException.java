@@ -17,6 +17,11 @@ package com.amazon.rdsdata.client;
 import com.amazonaws.services.rdsdata.model.Field;
 import lombok.val;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
+import static java.util.stream.Collectors.joining;
+
 public class MappingException extends RuntimeException {
     static final String ERROR_NO_FIELD_OR_SETTER = "Class '%s' does not contain field '%s' or a corresponding setter";
     static final String ERROR_CANNOT_ACCESS_FIELD = "Cannot access field '%s' in class %s";
@@ -26,6 +31,7 @@ public class MappingException extends RuntimeException {
     static final String ERROR_CANNOT_SET_VALUE = "Cannot set value '%s'";
     static final String ERROR_EMPTY_RESULT_SET = "Result set is empty";
     static final String ERROR_CANNOT_CONVERT_TO_TYPE = "Cannot convert field %s to type %s";
+    static final String ERROR_AMBIGUOUS_SETTER = "Ambiguous setter for field %s. Possible setters found: %s";
 
     private MappingException(String message) {
         super(message);
@@ -71,6 +77,14 @@ public class MappingException extends RuntimeException {
 
     static MappingException cannotConvertToType(Field field, Class targetType) {
         val message = String.format(ERROR_CANNOT_CONVERT_TO_TYPE, field.toString(), targetType.toString());
+        return new MappingException(message);
+    }
+
+    static MappingException ambiguousSetter(String fieldName, List<Method> possibleSetters) {
+        val settersListString = possibleSetters.stream()
+            .map(Method::toString)
+            .collect(joining(", "));
+        val message = String.format(ERROR_AMBIGUOUS_SETTER, fieldName, settersListString);
         return new MappingException(message);
     }
 }

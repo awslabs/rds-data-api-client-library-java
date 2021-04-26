@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
@@ -34,13 +35,23 @@ class SetterWriter extends Writer {
     static Optional<Writer> setterWriterFor(Object instance, String fieldName) {
         val instanceType = instance.getClass();
         val setterName = buildSetterName(fieldName);
-        return Stream.of(instanceType.getDeclaredMethods())
-                .filter(method -> method.getName().equals(setterName))
-                .filter(SetterWriter::isNotStatic)
-                .filter(SetterWriter::hasOneParameter)
-                .filter(SetterWriter::isPublic)
-                .map(method -> (Writer) new SetterWriter(instance, method, fieldName))
-                .findFirst();
+
+        val possibleSetterMethods = Stream.of(instanceType.getDeclaredMethods())
+            .filter(method -> method.getName().equals(setterName))
+            .filter(SetterWriter::isNotStatic)
+            .filter(SetterWriter::hasOneParameter)
+            .filter(SetterWriter::isPublic)
+            .collect(toList());
+
+        if (possibleSetterMethods.size() > 1) {
+            throw MappingException.ambiguousSetter(fieldName, possibleSetterMethods);
+        }
+
+        if (possibleSetterMethods.size() == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new SetterWriter(instance, possibleSetterMethods.get(0), fieldName));
     }
 
     private static boolean isNotStatic(Method method) {
