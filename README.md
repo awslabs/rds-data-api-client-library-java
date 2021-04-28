@@ -69,3 +69,11 @@ Account result = client.forSql("SELECT * FROM accounts WHERE account_id = 1")
           .execute()
           .mapToSingle(Account.class);          
 ```                
+
+In many cases, the database result set contains only a single value. In order to simplify retrieving such results, the client library offers the following API:
+
+```java
+int numberOfAccounts = client.forSql("SELECT COUNT(*) FROM accounts")
+          .execute()
+          .singleValue(Integer.class);          
+``` 

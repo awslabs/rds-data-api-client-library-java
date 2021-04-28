@@ -108,12 +108,29 @@ public class ExecutionResult {
                 .collect(toList());
     }
 
-    @AllArgsConstructor
+    /**
+     * Returns the single value from the first row and the first column from the result set, converting it to the type {@link T}
+     * @param convertToType type to convert to
+     * @return a value of a type {@link T} from the first row and the first column from the result set
+     * @throws EmptyResultSetException if the result set is empty
+     */
+    public <T> T singleValue(Class<T> convertToType) {
+        if (rows.size() == 0 || rows.get(0).columnCount() == 0)
+            throw new EmptyResultSetException();
+
+        return rows.get(0).getValue(0, convertToType);
+    }
+
+  @AllArgsConstructor
     static class Row {
         private List<Field> fields;
 
         public <T> T getValue(int index, Class<T> type) {
             return (T) TypeConverter.fromField(fields.get(index), type);
+        }
+
+        public int columnCount() {
+            return fields.size();
         }
     }
 }
