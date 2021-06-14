@@ -119,7 +119,7 @@ public class RdsDataClient {
                 .withParamSets(singletonList(result.parameters));
     }
 
-    ExecutionResult executeStatement(String transactionId, String sql, Map<String, Object> params) {
+    ExecutionResult executeStatement(String transactionId, String sql, Map<String, Object> params, boolean continueAfterTimeout) {
         val request = new ExecuteStatementRequest()
                 .withDatabase(database)
                 .withResourceArn(resourceArn)
@@ -127,6 +127,7 @@ public class RdsDataClient {
                 .withSql(sql)
                 .withParameters(toSqlParameterList(params))
                 .withTransactionId(transactionId)
+                .withContinueAfterTimeout(continueAfterTimeout)
                 .withResultSetOptions(new ResultSetOptions()
                         .withDecimalReturnType(DecimalReturnType.STRING))
                 .withIncludeResultMetadata(true);

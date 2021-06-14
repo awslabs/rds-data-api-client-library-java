@@ -33,6 +33,7 @@ public class Executor {
     private final RdsDataClient client;
     private List<Object> paramSets = emptyList();
     private String transactionId = ""; // RDS Data API understands empty string as "no transaction"
+    private boolean continueAfterTimeout = false;
 
     /**
      * Sets a single parameter set
@@ -112,7 +113,7 @@ public class Executor {
                 .findFirst()
                 .map(paramSet -> toMap(sql, paramSet))
                 .orElse(emptyMap());
-        return client.executeStatement(transactionId, sql, firstParamSetAsMap);
+        return client.executeStatement(transactionId, sql, firstParamSetAsMap, continueAfterTimeout);
     }
 
     private Map<String, Object> toMap(String sql, Object paramSet) {
@@ -132,6 +133,15 @@ public class Executor {
      */
     public Executor withTransactionId(String transactionId) {
         this.transactionId = transactionId;
+        return this;
+    }
+
+    /**
+     * Specifies that the query should continue to be executed even after timeout
+     * @return a reference to this object so that method calls can be chained
+     */
+    public Executor withContinueAfterTimeout() {
+        this.continueAfterTimeout = true;
         return this;
     }
 }
