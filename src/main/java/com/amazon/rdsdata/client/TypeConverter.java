@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -119,10 +120,36 @@ class TypeConverter {
             return Enum.valueOf((Class<? extends Enum>) type, field.getStringValue());
         } else if (type == UUID.class) {
             return java.util.UUID.fromString(field.getStringValue());
+        } else if (type == LocalDateTime.class) {
+            return LocalDateTime.from(DATE_TIME_FORMATTER.parse(field.getStringValue()));
+        } else if (type == LocalDate.class) {
+            return dateFromString(field.getStringValue());
+        } else if (type == LocalTime.class) {
+            return timeFromString(field.getStringValue());
         }
 
         // TODO: handle this case
         return null;
+    }
+
+    private static LocalDate dateFromString(String dateString) {
+        try {
+            // date can be provided in format "yyyy-MM-dd HH:mm:ss[.SSS]"
+            return LocalDate.from(DATE_TIME_FORMATTER.parse(dateString));
+        } catch (DateTimeParseException e) {
+            // ... or as "yyyy-MM-dd"
+            return LocalDate.from(DATE_FORMATTER.parse(dateString));
+        }
+    }
+
+    private static LocalTime timeFromString(String timeString) {
+        try {
+            // time can be provided in format "yyyy-MM-dd HH:mm:ss[.SSS]"
+            return LocalTime.from(DATE_TIME_FORMATTER.parse(timeString));
+        } catch (DateTimeParseException e) {
+            // ... or as "HH:mm:ss"
+            return LocalTime.from(TIME_FORMATTER.parse(timeString));
+        }
     }
 
     private static BigDecimal toBigDecimal(Field field) {

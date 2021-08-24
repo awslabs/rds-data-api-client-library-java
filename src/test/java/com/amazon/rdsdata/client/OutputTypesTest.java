@@ -23,6 +23,9 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import static com.amazon.rdsdata.client.MappingException.ERROR_CANNOT_CONVERT_TO_TYPE;
@@ -85,6 +88,36 @@ public class OutputTypesTest extends TestBase {
         public String nullField;
         public EnumType enumType;
         public UUID uuid;
+    }
+
+    @Test
+    void shouldMapToFieldsOfTemporalTypes() {
+        mockReturnValue(
+            mockColumn("localDateTime", new Field().withStringValue("2021-08-23 14:30:16.223")),
+            mockColumn("localDateFromDateWithTime", new Field().withStringValue("2021-08-23 14:30:16.223")),
+            mockColumn("localDateFromDate", new Field().withStringValue("2021-08-23")),
+            mockColumn("localTimeFromDateWithTime", new Field().withStringValue("2021-08-23 14:30:16.223")),
+            mockColumn("localTimeFromTime", new Field().withStringValue("14:30:16"))
+        );
+
+        val result = client.forSql("SELECT *")
+            .execute()
+            .mapToSingle(TemporalTypes.class);
+
+        assertThat(result.localDateTime).isEqualTo(LocalDateTime.of(2021, 8, 23, 14, 30, 16, 223_000_000));
+        assertThat(result.localDateFromDateWithTime).isEqualTo(LocalDate.of(2021, 8, 23));
+        assertThat(result.localDateFromDate).isEqualTo(LocalDate.of(2021, 8, 23));
+        assertThat(result.localTimeFromDateWithTime).isEqualTo(LocalTime.of(14, 30, 16, 223_000_000));
+        assertThat(result.localTimeFromTime).isEqualTo(LocalTime.of(14, 30, 16));
+    }
+
+    @NoArgsConstructor
+    private static class TemporalTypes {
+        public LocalDateTime localDateTime;
+        public LocalDate localDateFromDateWithTime;
+        public LocalDate localDateFromDate;
+        public LocalTime localTimeFromDateWithTime;
+        public LocalTime localTimeFromTime;
     }
 
     @Test
