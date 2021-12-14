@@ -22,13 +22,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.amazon.rdsdata.client.FieldPropertyWriter.fieldPropertyWriterFor;
+import static com.amazon.rdsdata.client.SetterPropertyWriter.setterPropertyWriterFor;
+
 @RequiredArgsConstructor
-class FieldObjectWriter<T> extends ObjectWriter<T> {
+class PropertyObjectWriter<T> extends ObjectWriter<T> {
     private final Class<T> mapperClass;
     private final List<String> fieldNames;
 
     public static <T> ObjectWriter<T> create(Class<T> mapperClass, List<String> fieldNames) {
-        return new FieldObjectWriter<>(mapperClass, fieldNames);
+        return new PropertyObjectWriter<>(mapperClass, fieldNames);
     }
 
     @Override
@@ -36,7 +39,7 @@ class FieldObjectWriter<T> extends ObjectWriter<T> {
         val constructor = findNoArgsConstructor()
                 .orElseThrow(() -> MappingException.cannotCreateInstanceViaNoArgsConstructor(mapperClass));
         val instance = createInstance(constructor);
-        populate(instance, row);
+        setProperties(instance, row);
         return instance;
     }
 
@@ -56,13 +59,19 @@ class FieldObjectWriter<T> extends ObjectWriter<T> {
         }
     }
 
-    private void populate(T instance, ExecutionResult.Row row) {
+    private void setProperties(T instance, ExecutionResult.Row row) {
         for (int i = 0; i < fieldNames.size(); i++) {
             val name = fieldNames.get(i);
-            val field = Writer.forName(instance, name);
+            val field = findPropertyWriter(instance, name);
             val value = row.getValue(i, field.getType());
 
-            field.setValue(value);
+            field.write(value);
         }
+    }
+
+    private static PropertyWriter findPropertyWriter(Object instance, String fieldName) {
+        return setterPropertyWriterFor(instance, fieldName)
+            .orElseGet(() -> fieldPropertyWriterFor(instance, fieldName)
+                .orElseThrow(() -> MappingException.noFieldOrSetter(instance.getClass(), fieldName)));
     }
 }

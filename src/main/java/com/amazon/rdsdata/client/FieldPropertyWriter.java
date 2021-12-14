@@ -24,12 +24,12 @@ import java.util.Optional;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
-class FieldWriter extends Writer {
+class FieldPropertyWriter implements PropertyWriter {
     private Object instance;
     private Class<?> fieldType;
     private Field field;
 
-    static Optional<FieldWriter> fieldWriterFor(Object instance, String fieldName) {
+    static Optional<PropertyWriter> fieldPropertyWriterFor(Object instance, String fieldName) {
         val instanceType = instance.getClass();
         try {
             val field = instanceType.getDeclaredField(fieldName);
@@ -37,7 +37,7 @@ class FieldWriter extends Writer {
                 throw MappingException.staticField(instanceType, fieldName);
             }
 
-            val writer = new FieldWriter(instance, field.getType(), field);
+            val writer = new FieldPropertyWriter(instance, field.getType(), field);
             return Optional.of(writer);
         } catch (NoSuchFieldException e) {
             return Optional.empty();
@@ -45,7 +45,7 @@ class FieldWriter extends Writer {
     }
 
     @Override
-    public void setValue(Object value) {
+    public void write(Object value) {
         try {
             field.set(instance, value);
         } catch (IllegalAccessException e) {

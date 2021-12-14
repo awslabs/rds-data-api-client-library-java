@@ -14,16 +14,7 @@
  */
 package com.amazon.rdsdata.client;
 
-import static com.amazon.rdsdata.client.FieldWriter.fieldWriterFor;
-import static com.amazon.rdsdata.client.SetterWriter.setterWriterFor;
-
-abstract class Writer {
-    public static Writer forName(Object instance, String fieldName) {
-        return setterWriterFor(instance, fieldName)
-                .orElseGet(() -> fieldWriterFor(instance, fieldName)
-                .orElseThrow(() -> MappingException.noFieldOrSetter(instance.getClass(), fieldName)));
-    }
-
-    public abstract void setValue(Object value);
-    public abstract Class<?> getType();
+interface PropertyWriter {
+    void write(Object value);
+    Class<?> getType();
 }

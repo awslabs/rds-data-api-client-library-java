@@ -92,7 +92,7 @@ public class ExecutionResult {
 
         // TODO: this can be cached
         ObjectWriter<T> writer = ConstructorObjectWriter.create(mapperClass, fieldNames)
-                .orElseGet(() -> FieldObjectWriter.create(mapperClass, fieldNames));
+                .orElseGet(() -> PropertyObjectWriter.create(mapperClass, fieldNames));
         return writer.write(row);
     }
 

@@ -27,20 +27,20 @@ import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
-class SetterWriter extends Writer {
+class SetterPropertyWriter implements PropertyWriter {
     private Object instance;
     private Method setter;
     private String fieldName;
 
-    static Optional<Writer> setterWriterFor(Object instance, String fieldName) {
+    static Optional<PropertyWriter> setterPropertyWriterFor(Object instance, String fieldName) {
         val instanceType = instance.getClass();
         val setterName = buildSetterName(fieldName);
 
         val possibleSetterMethods = Stream.of(instanceType.getDeclaredMethods())
             .filter(method -> method.getName().equals(setterName))
-            .filter(SetterWriter::isNotStatic)
-            .filter(SetterWriter::hasOneParameter)
-            .filter(SetterWriter::isPublic)
+            .filter(SetterPropertyWriter::isNotStatic)
+            .filter(SetterPropertyWriter::hasOneParameter)
+            .filter(SetterPropertyWriter::isPublic)
             .collect(toList());
 
         if (possibleSetterMethods.size() > 1) {
@@ -51,7 +51,7 @@ class SetterWriter extends Writer {
             return Optional.empty();
         }
 
-        return Optional.of(new SetterWriter(instance, possibleSetterMethods.get(0), fieldName));
+        return Optional.of(new SetterPropertyWriter(instance, possibleSetterMethods.get(0), fieldName));
     }
 
     private static boolean isNotStatic(Method method) {
@@ -71,7 +71,7 @@ class SetterWriter extends Writer {
     }
 
     @Override
-    public void setValue(Object value) {
+    public void write(Object value) {
         try {
             setter.invoke(instance, value);
         } catch (IllegalAccessException | InvocationTargetException e) {
