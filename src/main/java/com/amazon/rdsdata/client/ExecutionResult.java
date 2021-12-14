@@ -24,30 +24,33 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 public class ExecutionResult {
-    private List<String> fieldNames;
-    private List<Row> rows;
-    private Long numberOfRecordsUpdated;
+    private final List<String> fieldNames;
+    private final List<Row> rows;
+    private final Long numberOfRecordsUpdated;
+    private final MappingOptions mappingOptions;
 
     ExecutionResult(List<ColumnMetadata> metadata,
                     List<List<Field>> fields,
                     Long numberOfRecordsUpdated,
                     MappingOptions mappingOptions) {
-        this.fieldNames = extractFieldNames(metadata, mappingOptions);
         this.rows = convertToRows(fields);
         this.numberOfRecordsUpdated = numberOfRecordsUpdated;
+        this.mappingOptions = mappingOptions;
+
+        this.fieldNames = extractFieldNames(metadata);
     }
 
-    private List<String> extractFieldNames(List<ColumnMetadata> metadata, MappingOptions mappingOptions) {
+    private List<String> extractFieldNames(List<ColumnMetadata> metadata) {
         if (metadata == null) {
             return emptyList();
         }
 
         return metadata.stream()
-                .map(entry -> getFieldName(entry, mappingOptions))
+                .map(this::getFieldName)
                 .collect(toList());
     }
 
-    private String getFieldName(ColumnMetadata columnMetadata, MappingOptions mappingOptions) {
+    private String getFieldName(ColumnMetadata columnMetadata) {
         if (mappingOptions.useLabelForMapping)
             return columnMetadata.getLabel();
         return columnMetadata.getName();
@@ -92,7 +95,7 @@ public class ExecutionResult {
 
         // TODO: this can be cached
         ObjectWriter<T> writer = ConstructorObjectWriter.create(mapperClass, fieldNames)
-                .orElseGet(() -> PropertyObjectWriter.create(mapperClass, fieldNames));
+                .orElseGet(() -> PropertyObjectWriter.create(mapperClass, fieldNames, mappingOptions));
         return writer.write(row);
     }
 

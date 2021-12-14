@@ -9,7 +9,9 @@ import lombok.With;
 public class MappingOptions {
   public static MappingOptions DEFAULT = MappingOptions.builder()
       .useLabelForMapping(false)
+      .ignoreMissingSetters(false)
       .build();
 
   @With public final boolean useLabelForMapping;
+  @With public final boolean ignoreMissingSetters;
 }

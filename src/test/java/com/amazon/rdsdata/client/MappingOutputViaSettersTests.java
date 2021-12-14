@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import static com.amazon.rdsdata.client.MappingException.ERROR_NO_FIELD_OR_SETTER;
 import static com.amazon.rdsdata.client.testutil.MockingTools.mockColumn;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MappingOutputViaSettersTests extends TestBase {
@@ -106,6 +107,18 @@ public class MappingOutputViaSettersTests extends TestBase {
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(NoCorrespondingSetter.class))
                 .isInstanceOf(MappingException.class)
                 .hasMessage(ERROR_NO_FIELD_OR_SETTER, NoCorrespondingSetter.class.getName(), "field");
+    }
+
+    @Test
+    void shouldNotThrowExceptionIfMissingSetterIsIgnored() {
+        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+
+        val mappingOptions = MappingOptions.builder()
+            .ignoreMissingSetters(true)
+            .build();
+
+        assertThatCode(() -> client.withMappingOptions(mappingOptions).forSql("SELECT *").execute().mapToSingle(NoCorrespondingSetter.class))
+            .doesNotThrowAnyException();
     }
 
     @SuppressWarnings("unused")

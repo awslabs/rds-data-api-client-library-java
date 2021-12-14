@@ -29,9 +29,10 @@ import static com.amazon.rdsdata.client.SetterPropertyWriter.setterPropertyWrite
 class PropertyObjectWriter<T> extends ObjectWriter<T> {
     private final Class<T> mapperClass;
     private final List<String> fieldNames;
+    private final MappingOptions mappingOptions;
 
-    public static <T> ObjectWriter<T> create(Class<T> mapperClass, List<String> fieldNames) {
-        return new PropertyObjectWriter<>(mapperClass, fieldNames);
+    public static <T> ObjectWriter<T> create(Class<T> mapperClass, List<String> fieldNames, MappingOptions mappingOptions) {
+        return new PropertyObjectWriter<>(mapperClass, fieldNames, mappingOptions);
     }
 
     @Override
@@ -39,7 +40,7 @@ class PropertyObjectWriter<T> extends ObjectWriter<T> {
         val constructor = findNoArgsConstructor()
                 .orElseThrow(() -> MappingException.cannotCreateInstanceViaNoArgsConstructor(mapperClass));
         val instance = createInstance(constructor);
-        setProperties(instance, row);
+        setAllProperties(instance, row);
         return instance;
     }
 
@@ -59,19 +60,28 @@ class PropertyObjectWriter<T> extends ObjectWriter<T> {
         }
     }
 
-    private void setProperties(T instance, ExecutionResult.Row row) {
+    private void setAllProperties(T instance, ExecutionResult.Row row) {
         for (int i = 0; i < fieldNames.size(); i++) {
             val name = fieldNames.get(i);
-            val field = findPropertyWriter(instance, name);
-            val value = row.getValue(i, field.getType());
-
-            field.write(value);
+            val index = i;
+            findPropertyWriter(instance, name)
+                .ifPresent(field -> setProperty(field, row, index));
         }
     }
 
-    private static PropertyWriter findPropertyWriter(Object instance, String fieldName) {
-        return setterPropertyWriterFor(instance, fieldName)
-            .orElseGet(() -> fieldPropertyWriterFor(instance, fieldName)
-                .orElseThrow(() -> MappingException.noFieldOrSetter(instance.getClass(), fieldName)));
+    private void setProperty(PropertyWriter propertyWriter, ExecutionResult.Row row, int index) {
+        val value = row.getValue(index, propertyWriter.getType());
+        propertyWriter.write(value);
+    }
+
+    private Optional<PropertyWriter> findPropertyWriter(Object instance, String fieldName) {
+        val result = setterPropertyWriterFor(instance, fieldName)
+            .map(Optional::of)
+            .orElseGet(() -> fieldPropertyWriterFor(instance, fieldName));
+
+        if (!result.isPresent() && !mappingOptions.ignoreMissingSetters) {
+            throw MappingException.noFieldOrSetter(instance.getClass(), fieldName);
+        }
+        return result;
     }
 }
