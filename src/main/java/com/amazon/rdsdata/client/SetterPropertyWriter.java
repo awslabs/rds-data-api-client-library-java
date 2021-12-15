@@ -36,7 +36,7 @@ class SetterPropertyWriter implements PropertyWriter {
         val instanceType = instance.getClass();
         val setterName = buildSetterName(fieldName);
 
-        val possibleSetterMethods = Stream.of(instanceType.getDeclaredMethods())
+        val possibleSetterMethods = Stream.of(instanceType.getMethods())
             .filter(method -> method.getName().equals(setterName))
             .filter(SetterPropertyWriter::isNotStatic)
             .filter(SetterPropertyWriter::hasOneParameter)

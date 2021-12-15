@@ -154,4 +154,26 @@ public class MappingOutputViaSettersTests extends TestBase {
         public void setField(Integer value) { }
         public void setField(Long value) { }
     }
+
+    @Test
+    void shouldUseSettersFromParentClass() {
+        mockReturnValue(mockColumn("stringValue", new Field().withStringValue("apple")));
+
+        val result = client.forSql("SELECT *")
+            .execute()
+            .mapToSingle(ChildClass.class);
+        assertThat(result.value).isEqualTo("apple");
+    }
+
+    @NoArgsConstructor
+    private static class ChildClass extends ParentClassWithSetter {
+    }
+
+    @NoArgsConstructor
+    private static class ParentClassWithSetter {
+        public String value;
+
+        @SuppressWarnings("unused")
+        public void setStringValue(String value) { this.value = value; }
+    }
 }

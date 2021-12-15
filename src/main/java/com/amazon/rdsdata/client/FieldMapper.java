@@ -17,7 +17,9 @@ package com.amazon.rdsdata.client;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -44,7 +46,7 @@ class FieldMapper {
 
     private Optional<Object> getValueFromField(String fieldName) {
         try {
-            val field = object.getClass().getDeclaredField(fieldName);
+            val field = getField(object, fieldName);
             field.setAccessible(true);
             val result = field.get(object);
             return Optional.of(result == null ? NULL : result);
@@ -55,10 +57,19 @@ class FieldMapper {
         }
     }
 
+    private Field getField(Object object, String fieldName) throws NoSuchFieldException {
+        try {
+            return object.getClass().getField(fieldName);
+        } catch (NoSuchFieldException e) {
+            // Falling back to getDeclaredField() to access private fields
+            return object.getClass().getDeclaredField(fieldName);
+        }
+    }
+
     private Optional<Object> getValueFromGetter(String fieldName) {
         val methodName = buildGetterName(fieldName);
         try {
-            val method = object.getClass().getDeclaredMethod(methodName);
+            val method = getMethod(object, methodName);
             checkArgument(method.getReturnType() != void.class, ERROR_VOID_RETURN_TYPE_NOT_SUPPORTED);
 
             method.setAccessible(true);
@@ -68,6 +79,15 @@ class FieldMapper {
             return Optional.empty();
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Cannot access method " + methodName + " from object " + object);
+        }
+    }
+
+    private Method getMethod(Object object, String methodName) throws NoSuchMethodException {
+        try {
+            return object.getClass().getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            // Falling back to getDeclaredMethod() to access private methods
+            return object.getClass().getDeclaredMethod(methodName);
         }
     }
 

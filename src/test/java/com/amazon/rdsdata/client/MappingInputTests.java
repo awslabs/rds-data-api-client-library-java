@@ -18,6 +18,8 @@ import com.amazon.rdsdata.client.testutil.TestBase;
 import com.amazonaws.services.rdsdata.model.Field;
 import com.amazonaws.services.rdsdata.model.SqlParameter;
 import com.google.common.collect.ImmutableList;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -254,5 +256,53 @@ class MappingInputTests extends TestBase {
     @Value
     private static class SampleDto {
         public final String param1;
+    }
+
+    @Test
+    void shouldMapDtoWithFieldInChildClass() {
+        val dto = new ParentWithNoFields();
+
+        client.forSql("INSERT INTO tbl1(value) VALUES(:value)")
+            .withParamSets(dto)
+            .execute();
+
+        val request = captureRequest();
+        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+            new SqlParameter()
+                .withName("value")
+                .withValue(new Field().withLongValue(1L))
+        );
+    }
+
+    private static class ParentWithNoFields extends ChildWithField {
+    }
+
+    private static class ChildWithField {
+        @SuppressWarnings("unused")
+        public final int value = 1;
+    }
+
+    @Test
+    void shouldMapDtoWithMethodInChildClass() {
+        val dto = new ParentWithNoMethods();
+
+        client.forSql("INSERT INTO tbl1(value) VALUES(:value)")
+            .withParamSets(dto)
+            .execute();
+
+        val request = captureRequest();
+        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+            new SqlParameter()
+                .withName("value")
+                .withValue(new Field().withLongValue(1L))
+        );
+    }
+
+    private static class ParentWithNoMethods extends ChildWithMethod {
+    }
+
+    private static class ChildWithMethod {
+        @SuppressWarnings("unused")
+        @Getter private final int value = 1;
     }
 }

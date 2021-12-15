@@ -29,6 +29,7 @@ import static com.amazon.rdsdata.client.MappingException.ERROR_STATIC_FIELD;
 import static com.amazon.rdsdata.client.testutil.MockingTools.mockColumn;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MappingOutputViaFieldsTests extends TestBase {
@@ -136,5 +137,20 @@ public class MappingOutputViaFieldsTests extends TestBase {
     public static class WithoutNoArgConstructor {
         public int field;
         public WithoutNoArgConstructor(int x) { }
+    }
+
+    @Test
+    void shouldAccessFieldsFromParentClass() {
+        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+
+        assertThatCode(() -> client.forSql("SELECT *").execute().mapToSingle(ChildWithoutFields.class))
+            .doesNotThrowAnyException();
+    }
+
+    public static class ChildWithoutFields extends ParentWithField {
+    }
+
+    public static class ParentWithField {
+        public String field;
     }
 }

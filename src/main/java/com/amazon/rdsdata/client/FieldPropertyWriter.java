@@ -32,15 +32,23 @@ class FieldPropertyWriter implements PropertyWriter {
     static Optional<PropertyWriter> fieldPropertyWriterFor(Object instance, String fieldName) {
         val instanceType = instance.getClass();
         try {
-            val field = instanceType.getDeclaredField(fieldName);
+            val field = getField(instanceType, fieldName);
             if (Modifier.isStatic(field.getModifiers())) {
                 throw MappingException.staticField(instanceType, fieldName);
             }
-
             val writer = new FieldPropertyWriter(instance, field.getType(), field);
             return Optional.of(writer);
         } catch (NoSuchFieldException e) {
             return Optional.empty();
+        }
+    }
+
+    private static Field getField(Class<?> instanceType, String fieldName) throws NoSuchFieldException {
+        try {
+            return instanceType.getField(fieldName);
+        } catch (NoSuchFieldException e) {
+            // Falling back to getDeclaredField() to find private fields
+            return instanceType.getDeclaredField(fieldName);
         }
     }
 
