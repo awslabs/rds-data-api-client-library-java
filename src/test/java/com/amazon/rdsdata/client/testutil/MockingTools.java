@@ -15,6 +15,8 @@
 package com.amazon.rdsdata.client.testutil;
 
 import com.amazonaws.services.rdsdata.AWSRDSData;
+import com.amazonaws.services.rdsdata.model.BeginTransactionRequest;
+import com.amazonaws.services.rdsdata.model.BeginTransactionResult;
 import com.amazonaws.services.rdsdata.model.ColumnMetadata;
 import com.amazonaws.services.rdsdata.model.ExecuteStatementRequest;
 import com.amazonaws.services.rdsdata.model.ExecuteStatementResult;
@@ -91,5 +93,10 @@ public class MockingTools {
     public static class ColumnDefinition {
         private ColumnMetadata metadata;
         private Field field;
+    }
+
+    public static void mockBeginTransaction(AWSRDSData mockClient, String transactionId) {
+        when(mockClient.beginTransaction(any(BeginTransactionRequest.class)))
+            .thenReturn(new BeginTransactionResult().withTransactionId(transactionId));
     }
 }

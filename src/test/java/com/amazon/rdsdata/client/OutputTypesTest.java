@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -39,19 +39,19 @@ public class OutputTypesTest extends TestBase {
         val bytes = new byte[] {1, 2, 3};
         val uuid = UUID.randomUUID();
         mockReturnValue(
-                mockColumn("stringValue", new Field().withStringValue("apple")),
-                mockColumn("byteValue", new Field().withLongValue(3L)),
-                mockColumn("intValue", new Field().withLongValue(4L)),
-                mockColumn("longValue", new Field().withLongValue(5L)),
-                mockColumn("charValue", new Field().withLongValue(6L)),
-                mockColumn("boxedLongValue", new Field().withLongValue(7L)),
-                mockColumn("doubleValue", new Field().withDoubleValue(1.5d)),
-                mockColumn("floatValue", new Field().withDoubleValue(2.5d)),
-                mockColumn("blob", new Field().withBlobValue(ByteBuffer.wrap(bytes))),
-                mockColumn("booleanValue", new Field().withBooleanValue(true)),
-                mockColumn("nullField", new Field().withIsNull(true)),
-                mockColumn("enumType", new Field().withStringValue("VALUE_1")),
-                mockColumn("uuid", new Field().withStringValue(uuid.toString()))
+                mockColumn("stringValue", SdkConstructs.stringField("apple")),
+                mockColumn("byteValue", SdkConstructs.longField(3L)),
+                mockColumn("intValue", SdkConstructs.longField(4L)),
+                mockColumn("longValue", SdkConstructs.longField(5L)),
+                mockColumn("charValue", SdkConstructs.longField(6L)),
+                mockColumn("boxedLongValue", SdkConstructs.longField(7L)),
+                mockColumn("doubleValue", SdkConstructs.doubleField(1.5d)),
+                mockColumn("floatValue", SdkConstructs.doubleField(2.5d)),
+                mockColumn("blob", SdkConstructs.blobField(bytes)),
+                mockColumn("booleanValue", SdkConstructs.booleanField(true)),
+                mockColumn("nullField", SdkConstructs.nullField()),
+                mockColumn("enumType", SdkConstructs.stringField("VALUE_1")),
+                mockColumn("uuid", SdkConstructs.stringField(uuid.toString()))
         );
 
         val result = client.forSql("SELECT *")
@@ -93,11 +93,11 @@ public class OutputTypesTest extends TestBase {
     @Test
     void shouldMapToFieldsOfTemporalTypes() {
         mockReturnValue(
-            mockColumn("localDateTime", new Field().withStringValue("2021-08-23 14:30:16.223")),
-            mockColumn("localDateFromDateWithTime", new Field().withStringValue("2021-08-23 14:30:16.223")),
-            mockColumn("localDateFromDate", new Field().withStringValue("2021-08-23")),
-            mockColumn("localTimeFromDateWithTime", new Field().withStringValue("2021-08-23 14:30:16.223")),
-            mockColumn("localTimeFromTime", new Field().withStringValue("14:30:16"))
+            mockColumn("localDateTime", SdkConstructs.stringField("2021-08-23 14:30:16.223")),
+            mockColumn("localDateFromDateWithTime", SdkConstructs.stringField("2021-08-23 14:30:16.223")),
+            mockColumn("localDateFromDate", SdkConstructs.stringField("2021-08-23")),
+            mockColumn("localTimeFromDateWithTime", SdkConstructs.stringField("2021-08-23 14:30:16.223")),
+            mockColumn("localTimeFromTime", SdkConstructs.stringField("14:30:16"))
         );
 
         val result = client.forSql("SELECT *")
@@ -123,11 +123,11 @@ public class OutputTypesTest extends TestBase {
     @Test
     void shouldMapToFieldsOfDecimalTypes() {
         mockReturnValue(
-                mockColumn("bigDecimalFromString", new Field().withStringValue("12.25")),
-                mockColumn("bigDecimalFromLong", new Field().withLongValue(12L)),
-                mockColumn("bigDecimalFromDouble", new Field().withDoubleValue(12.5)),
-                mockColumn("bigIntegerFromString", new Field().withStringValue("333")),
-                mockColumn("bigIntegerFromLong", new Field().withLongValue(444L))
+                mockColumn("bigDecimalFromString", SdkConstructs.stringField("12.25")),
+                mockColumn("bigDecimalFromLong", SdkConstructs.longField(12L)),
+                mockColumn("bigDecimalFromDouble", SdkConstructs.doubleField(12.5)),
+                mockColumn("bigIntegerFromString", SdkConstructs.stringField("333")),
+                mockColumn("bigIntegerFromLong", SdkConstructs.longField(444L))
         );
 
         val result = client.forSql("SELECT *")
@@ -152,7 +152,7 @@ public class OutputTypesTest extends TestBase {
 
     @Test
     void shouldThrowExceptionIfFieldCannotBeConvertedToBigDecimal() {
-        val field = new Field().withBooleanValue(true);
+        val field = SdkConstructs.booleanField(true);
         mockReturnValue(mockColumn("bigDecimal", field));
 
         assertThatThrownBy(() -> client.forSql("SELECT *")
@@ -171,7 +171,7 @@ public class OutputTypesTest extends TestBase {
 
     @Test
     void shouldThrowExceptionIfFieldCannotBeConvertedToBigInteger() {
-        val field = new Field().withBooleanValue(true);
+        val field = SdkConstructs.booleanField(true);
         mockReturnValue(mockColumn("bigInteger", field));
 
         assertThatThrownBy(() -> client.forSql("SELECT *")

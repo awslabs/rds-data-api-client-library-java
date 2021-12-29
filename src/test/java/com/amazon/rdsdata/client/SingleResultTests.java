@@ -1,7 +1,7 @@
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class SingleResultTests extends TestBase {
   @Test
   void shouldMapToSingleObject() {
-    mockReturnValue(mockColumn("fieldName", new Field().withLongValue(1L)));
+    mockReturnValue(mockColumn("fieldName", SdkConstructs.longField(1L)));
 
     val result = client.forSql("SELECT *")
         .execute()

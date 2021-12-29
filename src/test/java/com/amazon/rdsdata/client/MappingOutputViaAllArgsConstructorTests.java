@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +28,8 @@ public class MappingOutputViaAllArgsConstructorTests extends TestBase {
     @Test
     void shouldMapViaAllArgsConstructor() {
         mockReturnValue(
-                mockColumn("stringValue", new Field().withStringValue("apple")),
-                mockColumn("intValue", new Field().withLongValue(15L)));
+                mockColumn("stringValue", SdkConstructs.stringField("apple")),
+                mockColumn("intValue", SdkConstructs.longField(15L)));
 
         val result = client.forSql("SELECT *")
                 .execute()
@@ -46,7 +46,7 @@ public class MappingOutputViaAllArgsConstructorTests extends TestBase {
 
     @Test
     void shouldFailToMapIfConstructorHasMoreParameters() {
-        mockReturnValue(mockColumn("stringValue", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("stringValue", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(ConstructorWithExtraParameters.class))
                 .isInstanceOf(MappingException.class)
@@ -61,8 +61,8 @@ public class MappingOutputViaAllArgsConstructorTests extends TestBase {
     @Test
     void shouldFailToMapIfConstructorHasLessParameters() {
         mockReturnValue(
-                mockColumn("stringValue1", new Field().withStringValue("apple")),
-                mockColumn("stringValue2", new Field().withStringValue("orange")));
+                mockColumn("stringValue1", SdkConstructs.stringField("apple")),
+                mockColumn("stringValue2", SdkConstructs.stringField("orange")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(ConstructorWithLessParameters.class))
                 .isInstanceOf(MappingException.class)

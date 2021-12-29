@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MappingOutputViaFieldsTests extends TestBase {
     @Test
     void shouldMapToClassWithPublicFields() {
-        mockReturnValue(mockColumn("value", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("value", SdkConstructs.stringField("apple")));
 
         val result = client.forSql("SELECT *")
                 .execute()
@@ -50,7 +50,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfFieldDoesNotExist() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(Object.class))
                 .isInstanceOf(MappingException.class)
@@ -59,7 +59,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfFieldIsPrivate() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(PrivateField.class))
                 .isInstanceOf(MappingException.class)
@@ -73,7 +73,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfFieldIsFinal() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(FinalField.class))
                 .isInstanceOf(MappingException.class)
@@ -99,7 +99,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfFieldIsStatic() {
-        mockReturnValue(mockColumn("field", new Field().withLongValue(1111L)));
+        mockReturnValue(mockColumn("field", SdkConstructs.longField(1111L)));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(StaticField.class))
                 .isInstanceOf(MappingException.class)
@@ -113,7 +113,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldUseFieldIfSetterIsNotAvailable() {
-        mockReturnValue(mockColumn("field", new Field().withLongValue(333L)));
+        mockReturnValue(mockColumn("field", SdkConstructs.longField(333L)));
 
         val dto = client.forSql("SELECT *").execute().mapToSingle(SetterAndField.class);
         assertThat(dto.field).isEqualTo(333L);
@@ -126,7 +126,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfNoArgsConstructorNotFound() {
-        mockReturnValue(mockColumn("field", new Field().withLongValue(333L)));
+        mockReturnValue(mockColumn("field", SdkConstructs.longField(333L)));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(WithoutNoArgConstructor.class))
                 .isInstanceOf(MappingException.class)
@@ -141,7 +141,7 @@ public class MappingOutputViaFieldsTests extends TestBase {
 
     @Test
     void shouldAccessFieldsFromParentClass() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatCode(() -> client.forSql("SELECT *").execute().mapToSingle(ChildWithoutFields.class))
             .doesNotThrowAnyException();

@@ -1,8 +1,7 @@
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
-import com.amazonaws.services.rdsdata.model.SqlParameter;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,8 +24,8 @@ public class SingleParameterWitherTests extends TestBase {
 
     val request = captureRequest();
     assertThat(request.getParameters()).containsExactly(
-        new SqlParameter().withName("a").withValue(new Field().withLongValue(100L)),
-        new SqlParameter().withName("b").withValue(new Field().withStringValue("hello"))
+        SdkConstructs.parameter("a", SdkConstructs.longField(100L)),
+        SdkConstructs.parameter("b", SdkConstructs.stringField("hello"))
     );
   }
 

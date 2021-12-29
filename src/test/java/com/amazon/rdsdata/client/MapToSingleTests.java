@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.Value;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ public class MapToSingleTests extends TestBase {
     @Test
     void shouldMapToSingleObject() {
         mockReturnValue(
-                mockColumn("intField", new Field().withLongValue(1L)),
-                mockColumn("stringField", new Field().withStringValue("hello")));
+                mockColumn("intField", SdkConstructs.longField(1L)),
+                mockColumn("stringField", SdkConstructs.stringField("hello")));
 
         val result = client.forSql("SELECT *")
                 .execute()
@@ -66,8 +66,8 @@ public class MapToSingleTests extends TestBase {
   @Test
   void shouldUseLabelIfConfigured() {
     mockReturnValue(
-        mockColumn("int_name", "intField", new Field().withLongValue(1L)),
-        mockColumn("string_name", "stringField", new Field().withStringValue("hello")));
+        mockColumn("int_name", "intField", SdkConstructs.longField(1L)),
+        mockColumn("string_name", "stringField", SdkConstructs.stringField("hello")));
 
     val result = client
         .withMappingOptions(MappingOptions.DEFAULT.withUseLabelForMapping(true))

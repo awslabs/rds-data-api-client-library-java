@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import com.google.common.collect.ImmutableList;
 import lombok.Value;
 import lombok.val;
@@ -29,11 +29,11 @@ public class MapToListTests extends TestBase {
     void shouldMapViaAllArgsConstructor() {
         mockReturnValues(
                 ImmutableList.of( // first row
-                        mockColumn("intField", new Field().withLongValue(1L)),
-                        mockColumn("stringField", new Field().withStringValue("hello"))
+                        mockColumn("intField", SdkConstructs.longField(1L)),
+                        mockColumn("stringField", SdkConstructs.stringField("hello"))
                 ), ImmutableList.of( // 2nd row
-                        mockColumn("intField", new Field().withLongValue(2L)),
-                        mockColumn("stringField", new Field().withStringValue("world"))
+                        mockColumn("intField", SdkConstructs.longField(2L)),
+                        mockColumn("stringField", SdkConstructs.stringField("world"))
                 ));
 
         val result = client.forSql("SELECT *")

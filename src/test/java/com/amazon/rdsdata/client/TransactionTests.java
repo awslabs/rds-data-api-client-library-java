@@ -15,18 +15,15 @@
 package com.amazon.rdsdata.client;
 
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.BeginTransactionRequest;
-import com.amazonaws.services.rdsdata.model.BeginTransactionResult;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static com.amazon.rdsdata.client.testutil.MockingTools.mockBeginTransaction;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 public class TransactionTests extends TestBase {
     @BeforeEach
@@ -62,7 +59,7 @@ public class TransactionTests extends TestBase {
     @Test
     public void shouldBeginTransaction() {
         val transactionId = UUID.randomUUID().toString();
-        mockBeginTransaction(transactionId);
+        mockBeginTransaction(originalClient, transactionId);
 
         val result = client.beginTransaction();
         assertThat(result).isEqualTo(transactionId);
@@ -71,11 +68,6 @@ public class TransactionTests extends TestBase {
         assertThat(request.getDatabase()).isEqualTo(SAMPLE_DB);
         assertThat(request.getResourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
         assertThat(request.getSecretArn()).isEqualTo(SAMPLE_SECRET_ARN);
-    }
-
-    private void mockBeginTransaction(String transactionId) {
-        when(originalClient.beginTransaction(any(BeginTransactionRequest.class)))
-                .thenReturn(new BeginTransactionResult().withTransactionId(transactionId));
     }
 
     @Test

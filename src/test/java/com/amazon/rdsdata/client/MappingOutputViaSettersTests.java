@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class MappingOutputViaSettersTests extends TestBase {
     @Test
     void shouldMapToFieldsOfDifferentType() {
-        mockReturnValue(mockColumn("stringValue", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("stringValue", SdkConstructs.stringField("apple")));
 
         val result = client.forSql("SELECT *")
                 .execute()
@@ -46,7 +46,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldNotUsePrivateSetter() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(PrivateSetter.class))
                 .isInstanceOf(MappingException.class)
@@ -60,7 +60,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldNotUseSetterWithMoreThanOneParameter() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(SetterWithTwoParameters.class))
                 .isInstanceOf(MappingException.class)
@@ -74,7 +74,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldNotUseSetterWithNoParameters() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(SetterWithNoParameters.class))
                 .isInstanceOf(MappingException.class)
@@ -88,7 +88,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldNotUseStaticSetter() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(StaticSetter.class))
                 .isInstanceOf(MappingException.class)
@@ -102,7 +102,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfSetterIsNotFound() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(NoCorrespondingSetter.class))
                 .isInstanceOf(MappingException.class)
@@ -111,7 +111,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldNotThrowExceptionIfMissingSetterIsIgnored() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         val mappingOptions = MappingOptions.builder()
             .ignoreMissingSetters(true)
@@ -128,7 +128,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldPreferSetterToField() {
-        mockReturnValue(mockColumn("field", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("field", SdkConstructs.stringField("apple")));
 
         val dto = client.forSql("SELECT *").execute().mapToSingle(SetterAndField.class);
         assertThat(dto.field).isEqualTo("orange");
@@ -142,7 +142,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldThrowExceptionIfMoreThanOneSetter() {
-        mockReturnValue(mockColumn("field", new Field().withLongValue(123L)));
+        mockReturnValue(mockColumn("field", SdkConstructs.longField(123L)));
 
         assertThatThrownBy(() -> client.forSql("SELECT *").execute().mapToSingle(AmbiguousSetter.class))
             .isInstanceOf(MappingException.class)
@@ -157,7 +157,7 @@ public class MappingOutputViaSettersTests extends TestBase {
 
     @Test
     void shouldUseSettersFromParentClass() {
-        mockReturnValue(mockColumn("stringValue", new Field().withStringValue("apple")));
+        mockReturnValue(mockColumn("stringValue", SdkConstructs.stringField("apple")));
 
         val result = client.forSql("SELECT *")
             .execute()

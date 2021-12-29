@@ -14,12 +14,10 @@
  */
 package com.amazon.rdsdata.client;
 
+import com.amazon.rdsdata.client.testutil.SdkConstructs;
 import com.amazon.rdsdata.client.testutil.TestBase;
-import com.amazonaws.services.rdsdata.model.Field;
-import com.amazonaws.services.rdsdata.model.SqlParameter;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.Value;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,12 +45,8 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("firstName")
-                        .withValue(new Field().withStringValue("John")),
-                new SqlParameter()
-                        .withName("lastName")
-                        .withValue(new Field().withStringValue("Doe"))
+            SdkConstructs.parameter("firstName", SdkConstructs.stringField("John")),
+            SdkConstructs.parameter("lastName", SdkConstructs.stringField("Doe"))
         );
     }
 
@@ -72,9 +66,7 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("data")
-                        .withValue(new Field().withIsNull(true))
+            SdkConstructs.parameter("data", SdkConstructs.nullField())
         );
     }
 
@@ -93,12 +85,8 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("firstName")
-                        .withValue(new Field().withStringValue("John")),
-                new SqlParameter()
-                        .withName("lastName")
-                        .withValue(new Field().withStringValue("Doe"))
+            SdkConstructs.parameter("firstName", SdkConstructs.stringField("John")),
+            SdkConstructs.parameter("lastName", SdkConstructs.stringField("Doe"))
         );
     }
 
@@ -118,9 +106,7 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("data")
-                        .withValue(new Field().withIsNull(true))
+            SdkConstructs.parameter("data", SdkConstructs.nullField())
         );
     }
 
@@ -139,12 +125,8 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("unboxed")
-                        .withValue(new Field().withLongValue(1L)),
-                new SqlParameter()
-                        .withName("boxed")
-                        .withValue(new Field().withLongValue(2L))
+            SdkConstructs.parameter("unboxed", SdkConstructs.longField(1L)),
+            SdkConstructs.parameter("boxed", SdkConstructs.longField(2L))
         );
     }
 
@@ -199,9 +181,8 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("enabled")
-                        .withValue(new Field().withBooleanValue(true)));
+            SdkConstructs.parameter("enabled", SdkConstructs.booleanField(true))
+        );
     }
 
     @SuppressWarnings("unused")
@@ -222,13 +203,11 @@ class MappingInputTests extends TestBase {
         assertThat(request.getParameterSets()).containsExactly(
                 // expecting list of lists of parameters
                 ImmutableList.of(
-                        new SqlParameter()
-                                .withName("value")
-                                .withValue(new Field().withLongValue(1L))),
+                    SdkConstructs.parameter("value", SdkConstructs.longField(1L))
+                ),
                 ImmutableList.of(
-                        new SqlParameter()
-                                .withName("value")
-                                .withValue(new Field().withLongValue(2L)))
+                    SdkConstructs.parameter("value", SdkConstructs.longField(2L))
+                )
         );
     }
 
@@ -247,9 +226,7 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-                new SqlParameter()
-                        .withName("param1")
-                        .withValue(new Field().withStringValue("value1"))
+            SdkConstructs.parameter("param1", SdkConstructs.stringField("value1"))
         );
     }
 
@@ -268,9 +245,7 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-            new SqlParameter()
-                .withName("value")
-                .withValue(new Field().withLongValue(1L))
+            SdkConstructs.parameter("value", SdkConstructs.longField(1L))
         );
     }
 
@@ -292,9 +267,7 @@ class MappingInputTests extends TestBase {
 
         val request = captureRequest();
         assertThat(request.getParameters()).containsExactlyInAnyOrder(
-            new SqlParameter()
-                .withName("value")
-                .withValue(new Field().withLongValue(1L))
+            SdkConstructs.parameter("value", SdkConstructs.longField(1L))
         );
     }
 
