@@ -39,10 +39,10 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 @Builder
-public class RdsDataClient {
+public class RdsData {
     static String ERROR_EMPTY_OR_NULL_SQL = "SQL parameter is null or empty";
 
-    private AWSRDSData rdsDataService;
+    private AWSRDSData sdkClient;
     private String database;
     private String secretArn;
     private String resourceArn;
@@ -59,7 +59,7 @@ public class RdsDataClient {
                 .withDatabase(database)
                 .withResourceArn(resourceArn)
                 .withSecretArn(secretArn);
-        val response = rdsDataService.beginTransaction(request);
+        val response = sdkClient.beginTransaction(request);
         return response.getTransactionId();
     }
 
@@ -72,7 +72,7 @@ public class RdsDataClient {
                 .withTransactionId(transactionId)
                 .withResourceArn(resourceArn)
                 .withSecretArn(secretArn);
-        rdsDataService.commitTransaction(request);
+        sdkClient.commitTransaction(request);
     }
 
     /**
@@ -84,7 +84,7 @@ public class RdsDataClient {
                 .withTransactionId(transactionId)
                 .withResourceArn(resourceArn)
                 .withSecretArn(secretArn);
-        rdsDataService.rollbackTransaction(request);
+        sdkClient.rollbackTransaction(request);
     }
 
     /**
@@ -132,7 +132,7 @@ public class RdsDataClient {
                         .withDecimalReturnType(DecimalReturnType.STRING))
                 .withIncludeResultMetadata(true);
 
-        val response = rdsDataService.executeStatement(request);
+        val response = sdkClient.executeStatement(request);
 
         return new ExecutionResult(response.getColumnMetadata(),
             response.getRecords(),
@@ -148,7 +148,7 @@ public class RdsDataClient {
                 .withSql(sql)
                 .withTransactionId(transactionId)
                 .withParameterSets(toSqlParameterSets(params));
-        rdsDataService.batchExecuteStatement(request);
+        sdkClient.batchExecuteStatement(request);
         return new ExecutionResult(emptyList(), emptyList(), 0L, mappingOptions);
     }
 

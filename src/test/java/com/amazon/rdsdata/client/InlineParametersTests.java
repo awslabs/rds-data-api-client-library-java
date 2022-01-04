@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.amazon.rdsdata.client.PlaceholderUtils.ERROR_NUMBER_OF_PARAMS_MISMATCH;
-import static com.amazon.rdsdata.client.RdsDataClient.ERROR_EMPTY_OR_NULL_SQL;
+import static com.amazon.rdsdata.client.RdsData.ERROR_EMPTY_OR_NULL_SQL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

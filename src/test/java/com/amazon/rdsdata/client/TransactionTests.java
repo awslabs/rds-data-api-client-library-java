@@ -59,7 +59,7 @@ public class TransactionTests extends TestBase {
     @Test
     public void shouldBeginTransaction() {
         val transactionId = UUID.randomUUID().toString();
-        mockBeginTransaction(originalClient, transactionId);
+        mockBeginTransaction(sdkClient, transactionId);
 
         val result = client.beginTransaction();
         assertThat(result).isEqualTo(transactionId);

@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class Executor {
     private final String sql;
-    private final RdsDataClient client;
+    private final RdsData rdsData;
     private List<Object> paramSets = emptyList();
     private String transactionId = ""; // RDS Data API understands empty string as "no transaction"
     private boolean continueAfterTimeout = false;
@@ -105,7 +105,7 @@ public class Executor {
         val paramSetsAsMaps = paramSets.stream()
                 .map(paramSet -> toMap(sql, paramSet))
                 .collect(toList());
-        return client.batchExecuteStatement(transactionId, sql, paramSetsAsMaps);
+        return rdsData.batchExecuteStatement(transactionId, sql, paramSetsAsMaps);
     }
 
     private ExecutionResult executeAsSingle() {
@@ -113,7 +113,7 @@ public class Executor {
                 .findFirst()
                 .map(paramSet -> toMap(sql, paramSet))
                 .orElse(emptyMap());
-        return client.executeStatement(transactionId, sql, firstParamSetAsMap, continueAfterTimeout);
+        return rdsData.executeStatement(transactionId, sql, firstParamSetAsMap, continueAfterTimeout);
     }
 
     private Map<String, Object> toMap(String sql, Object paramSet) {
