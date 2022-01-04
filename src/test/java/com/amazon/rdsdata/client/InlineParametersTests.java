@@ -36,7 +36,7 @@ public class InlineParametersTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getSql()).isEqualTo("INSERT INTO tbl1(a, b, c) VALUES(:1, :2, :3)");
+        assertThat(request.sql()).isEqualTo("INSERT INTO tbl1(a, b, c) VALUES(:1, :2, :3)");
     }
 
     @Test
@@ -44,8 +44,8 @@ public class InlineParametersTests extends TestBase {
         client.forSql("SELECT 1").execute();
 
         val request = captureRequest();
-        assertThat(request.getSql()).isEqualTo("SELECT 1");
-        assertThat(request.getParameters()).isEmpty();
+        assertThat(request.sql()).isEqualTo("SELECT 1");
+        assertThat(request.parameters()).isEmpty();
     }
 
     @Test

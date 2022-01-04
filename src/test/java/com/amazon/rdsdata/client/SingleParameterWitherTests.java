@@ -23,7 +23,7 @@ public class SingleParameterWitherTests extends TestBase {
         .execute();
 
     val request = captureRequest();
-    assertThat(request.getParameters()).containsExactly(
+    assertThat(request.parameters()).containsExactly(
         SdkConstructs.parameter("a", SdkConstructs.longField(100L)),
         SdkConstructs.parameter("b", SdkConstructs.stringField("hello"))
     );

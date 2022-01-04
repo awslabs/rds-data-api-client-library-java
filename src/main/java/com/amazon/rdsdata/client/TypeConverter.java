@@ -14,12 +14,12 @@
  */
 package com.amazon.rdsdata.client;
 
-import com.amazonaws.services.rdsdata.model.Field;
-import com.amazonaws.services.rdsdata.model.TypeHint;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.rdsdata.model.Field;
+import software.amazon.awssdk.services.rdsdata.model.TypeHint;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,11 +28,10 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.amazonaws.services.rdsdata.model.TypeHint.DATE;
-import static com.amazonaws.services.rdsdata.model.TypeHint.DECIMAL;
-import static com.amazonaws.services.rdsdata.model.TypeHint.TIME;
-import static com.amazonaws.services.rdsdata.model.TypeHint.TIMESTAMP;
-import static com.amazonaws.services.rdsdata.model.TypeHint.UUID;
+import static software.amazon.awssdk.services.rdsdata.model.TypeHint.DATE;
+import static software.amazon.awssdk.services.rdsdata.model.TypeHint.DECIMAL;
+import static software.amazon.awssdk.services.rdsdata.model.TypeHint.TIME;
+import static software.amazon.awssdk.services.rdsdata.model.TypeHint.TIMESTAMP;
 
 class TypeConverter {
     static String ERROR_PARAMETER_OF_UNKNOWN_TYPE = "Unknown parameter type: ";
@@ -43,31 +42,31 @@ class TypeConverter {
 
     static Field toField(Object o) {
         if (o == null || o == FieldMapper.NULL) {
-            return new Field().withIsNull(true);
+            return Field.builder().isNull(true).build();
         } else if (o instanceof Byte || o instanceof Integer || o instanceof Long) {
-            return new Field().withLongValue(((Number) o).longValue());
+            return Field.builder().longValue(((Number) o).longValue()).build();
         } else if (o instanceof Double || o instanceof Float) {
-            return new Field().withDoubleValue(((Number) o).doubleValue());
+            return Field.builder().doubleValue(((Number) o).doubleValue()).build();
         } else if (o instanceof Character) {
-            return new Field().withLongValue((long) (Character) o);
+            return Field.builder().longValue((long) (Character) o).build();
         } else if (o instanceof String) {
-            return new Field().withStringValue(o.toString());
+            return Field.builder().stringValue(o.toString()).build();
         } else if (o instanceof Boolean) {
-            return new Field().withBooleanValue((Boolean) o);
+            return Field.builder().booleanValue((Boolean) o).build();
         } else if (o instanceof byte[]) {
-            return new Field().withBlobValue(ByteBuffer.wrap((byte[]) o));
+            return Field.builder().blobValue(SdkBytes.fromByteArray((byte[]) o)).build();
         } else if (o instanceof BigDecimal || o instanceof BigInteger) {
-            return new Field().withStringValue(o.toString());
+            return Field.builder().stringValue(o.toString()).build();
         } else if (o instanceof LocalDateTime) {
-            return new Field().withStringValue(DATE_TIME_FORMATTER.format((LocalDateTime) o));
+            return Field.builder().stringValue(DATE_TIME_FORMATTER.format((LocalDateTime) o)).build();
         } else if (o instanceof LocalDate) {
-            return new Field().withStringValue(DATE_FORMATTER.format((LocalDate) o));
+            return Field.builder().stringValue(DATE_FORMATTER.format((LocalDate) o)).build();
         } else if (o instanceof LocalTime) {
-            return new Field().withStringValue(TIME_FORMATTER.format((LocalTime) o));
+            return Field.builder().stringValue(TIME_FORMATTER.format((LocalTime) o)).build();
         } else if (o instanceof Enum) {
-            return new Field().withStringValue(((Enum<?>) o).name());
+            return Field.builder().stringValue(((Enum<?>) o).name()).build();
         } else if (o instanceof UUID) {
-            return new Field().withStringValue(o.toString());
+            return Field.builder().stringValue(o.toString()).build();
         }
 
         throw new IllegalArgumentException(ERROR_PARAMETER_OF_UNKNOWN_TYPE + o.getClass().getName());
@@ -83,7 +82,7 @@ class TypeConverter {
         } else if (o instanceof LocalTime) {
             return Optional.of(TIME);
         } else if (o instanceof UUID) {
-            return Optional.of(UUID);
+            return Optional.of(TypeHint.UUID);
         }
 
         return Optional.empty();
@@ -95,37 +94,37 @@ class TypeConverter {
         if (field.isNull() != null && field.isNull()) {
             return null;
         } if (type == String.class) {
-            return field.getStringValue();
+            return field.stringValue();
         } else if (type == Byte.class || type == byte.class) {
-            return field.getLongValue().byteValue();
+            return field.longValue().byteValue();
         } else if (type == Integer.class || type == int.class) {
-            return field.getLongValue().intValue();
+            return field.longValue().intValue();
         } else if (type == Long.class || type == long.class) {
-            return field.getLongValue();
+            return field.longValue();
         } else if (type == Character.class || type == char.class) {
-            return (char) field.getLongValue().longValue();
+            return (char) field.longValue().longValue();
         } else if (type == Double.class || type == double.class) {
-            return field.getDoubleValue();
+            return field.doubleValue();
         } else if (type == Float.class || type == float.class) {
-            return field.getDoubleValue().floatValue();
+            return field.doubleValue().floatValue();
         } else if (type == byte[].class) {
-            return field.getBlobValue().array();
+            return field.blobValue().asByteArray();
         } else if (type == Boolean.class || type == boolean.class) {
-            return field.getBooleanValue();
+            return field.booleanValue();
         } else if (type == BigDecimal.class) {
             return toBigDecimal(field);
         } else if (type == BigInteger.class) {
             return toBigInteger(field);
         } else if (Enum.class.isAssignableFrom(type)) {
-            return Enum.valueOf((Class<? extends Enum>) type, field.getStringValue());
+            return Enum.valueOf((Class<? extends Enum>) type, field.stringValue());
         } else if (type == UUID.class) {
-            return java.util.UUID.fromString(field.getStringValue());
+            return java.util.UUID.fromString(field.stringValue());
         } else if (type == LocalDateTime.class) {
-            return LocalDateTime.from(DATE_TIME_FORMATTER.parse(field.getStringValue()));
+            return LocalDateTime.from(DATE_TIME_FORMATTER.parse(field.stringValue()));
         } else if (type == LocalDate.class) {
-            return dateFromString(field.getStringValue());
+            return dateFromString(field.stringValue());
         } else if (type == LocalTime.class) {
-            return timeFromString(field.getStringValue());
+            return timeFromString(field.stringValue());
         }
 
         // TODO: handle this case
@@ -153,22 +152,22 @@ class TypeConverter {
     }
 
     private static BigDecimal toBigDecimal(Field field) {
-        if (field.getStringValue() != null) {
-            return new BigDecimal(field.getStringValue());
-        } else if (field.getLongValue() != null) {
-            return BigDecimal.valueOf(field.getLongValue());
-        } else if (field.getDoubleValue() != null) {
-            return BigDecimal.valueOf(field.getDoubleValue());
+        if (field.stringValue() != null) {
+            return new BigDecimal(field.stringValue());
+        } else if (field.longValue() != null) {
+            return BigDecimal.valueOf(field.longValue());
+        } else if (field.doubleValue() != null) {
+            return BigDecimal.valueOf(field.doubleValue());
         }
 
         throw MappingException.cannotConvertToType(field, BigDecimal.class);
     }
 
     private static BigInteger toBigInteger(Field field) {
-        if (field.getStringValue() != null) {
-            return new BigInteger(field.getStringValue());
-        } else if (field.getLongValue() != null) {
-            return BigInteger.valueOf(field.getLongValue());
+        if (field.stringValue() != null) {
+            return new BigInteger(field.stringValue());
+        } else if (field.longValue() != null) {
+            return BigInteger.valueOf(field.longValue());
         }
 
         throw MappingException.cannotConvertToType(field, BigInteger.class);

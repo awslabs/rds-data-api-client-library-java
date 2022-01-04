@@ -20,7 +20,7 @@ public class RequestFlagsTests extends TestBase {
         .execute();
 
     val request = captureRequest();
-    assertThat(request.getContinueAfterTimeout()).isTrue();
+    assertThat(request.continueAfterTimeout()).isTrue();
   }
 
   @Test
@@ -29,6 +29,6 @@ public class RequestFlagsTests extends TestBase {
         .execute();
 
     val request = captureRequest();
-    assertThat(request.getContinueAfterTimeout()).isFalse();
+    assertThat(request.continueAfterTimeout()).isFalse();
   }
 }

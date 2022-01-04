@@ -14,8 +14,8 @@
  */
 package com.amazon.rdsdata.client;
 
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.val;
+import software.amazon.awssdk.services.rdsdata.model.Field;
 
 import java.lang.reflect.Method;
 import java.util.List;

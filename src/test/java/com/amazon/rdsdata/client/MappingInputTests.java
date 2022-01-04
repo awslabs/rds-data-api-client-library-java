@@ -44,7 +44,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("firstName", SdkConstructs.stringField("John")),
             SdkConstructs.parameter("lastName", SdkConstructs.stringField("Doe"))
         );
@@ -65,7 +65,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("data", SdkConstructs.nullField())
         );
     }
@@ -84,7 +84,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("firstName", SdkConstructs.stringField("John")),
             SdkConstructs.parameter("lastName", SdkConstructs.stringField("Doe"))
         );
@@ -105,7 +105,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("data", SdkConstructs.nullField())
         );
     }
@@ -124,7 +124,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("unboxed", SdkConstructs.longField(1L)),
             SdkConstructs.parameter("boxed", SdkConstructs.longField(2L))
         );
@@ -180,7 +180,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("enabled", SdkConstructs.booleanField(true))
         );
     }
@@ -200,7 +200,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureBatchRequest();
-        assertThat(request.getParameterSets()).containsExactly(
+        assertThat(request.parameterSets()).containsExactly(
                 // expecting list of lists of parameters
                 ImmutableList.of(
                     SdkConstructs.parameter("value", SdkConstructs.longField(1L))
@@ -225,7 +225,7 @@ class MappingInputTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("param1", SdkConstructs.stringField("value1"))
         );
     }
@@ -244,7 +244,7 @@ class MappingInputTests extends TestBase {
             .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("value", SdkConstructs.longField(1L))
         );
     }
@@ -266,7 +266,7 @@ class MappingInputTests extends TestBase {
             .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactlyInAnyOrder(
+        assertThat(request.parameters()).containsExactlyInAnyOrder(
             SdkConstructs.parameter("value", SdkConstructs.longField(1L))
         );
     }

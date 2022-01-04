@@ -14,9 +14,9 @@
  */
 package com.amazon.rdsdata.client;
 
-import com.amazonaws.services.rdsdata.model.ColumnMetadata;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.AllArgsConstructor;
+import software.amazon.awssdk.services.rdsdata.model.ColumnMetadata;
+import software.amazon.awssdk.services.rdsdata.model.Field;
 
 import java.util.List;
 
@@ -52,8 +52,8 @@ public class ExecutionResult {
 
     private String getFieldName(ColumnMetadata columnMetadata) {
         if (mappingOptions.useLabelForMapping)
-            return columnMetadata.getLabel();
-        return columnMetadata.getName();
+            return columnMetadata.label();
+        return columnMetadata.name();
     }
 
     private List<Row> convertToRows(List<List<Field>> records) {

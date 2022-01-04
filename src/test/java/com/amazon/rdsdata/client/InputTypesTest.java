@@ -16,13 +16,13 @@ package com.amazon.rdsdata.client;
 
 import com.amazon.rdsdata.client.testutil.TestBase;
 import com.amazon.rdsdata.client.testutil.SdkConstructs;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import software.amazon.awssdk.services.rdsdata.model.Field;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -51,7 +51,7 @@ public class InputTypesTest extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactly(SdkConstructs.parameter("1", expectedValue));
+        assertThat(request.parameters()).containsExactly(SdkConstructs.parameter("1", expectedValue));
     }
 
     @SuppressWarnings("RedundantCast")
@@ -78,7 +78,7 @@ public class InputTypesTest extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactly(SdkConstructs.parameter("1", expectedValue, hint));
+        assertThat(request.parameters()).containsExactly(SdkConstructs.parameter("1", expectedValue, hint));
     }
 
     private static Stream<Arguments> typesThatNeedHints() {
@@ -101,7 +101,7 @@ public class InputTypesTest extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactly(SdkConstructs.parameter("1", SdkConstructs.nullField()));
+        assertThat(request.parameters()).containsExactly(SdkConstructs.parameter("1", SdkConstructs.nullField()));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class InputTypesTest extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getParameters()).containsExactly(SdkConstructs.parameter("1", SdkConstructs.nullField()));
+        assertThat(request.parameters()).containsExactly(SdkConstructs.parameter("1", SdkConstructs.nullField()));
     }
 
     @Test

@@ -40,7 +40,7 @@ public class TransactionTests extends TestBase {
                 .execute();
 
         val request = captureRequest();
-        assertThat(request.getTransactionId()).isEqualTo(transactionId);
+        assertThat(request.transactionId()).isEqualTo(transactionId);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class TransactionTests extends TestBase {
                 .execute();
 
         val request = captureBatchRequest();
-        assertThat(request.getTransactionId()).isEqualTo(transactionId);
+        assertThat(request.transactionId()).isEqualTo(transactionId);
     }
 
     @Test
@@ -65,9 +65,9 @@ public class TransactionTests extends TestBase {
         assertThat(result).isEqualTo(transactionId);
 
         val request = captureBeginTransactionRequest();
-        assertThat(request.getDatabase()).isEqualTo(SAMPLE_DB);
-        assertThat(request.getResourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
-        assertThat(request.getSecretArn()).isEqualTo(SAMPLE_SECRET_ARN);
+        assertThat(request.database()).isEqualTo(SAMPLE_DB);
+        assertThat(request.resourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
+        assertThat(request.secretArn()).isEqualTo(SAMPLE_SECRET_ARN);
     }
 
     @Test
@@ -77,9 +77,9 @@ public class TransactionTests extends TestBase {
         client.commitTransaction(transactionId);
 
         val request = captureCommitTransactionRequest();
-        assertThat(request.getTransactionId()).isEqualTo(transactionId);
-        assertThat(request.getResourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
-        assertThat(request.getSecretArn()).isEqualTo(SAMPLE_SECRET_ARN);
+        assertThat(request.transactionId()).isEqualTo(transactionId);
+        assertThat(request.resourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
+        assertThat(request.secretArn()).isEqualTo(SAMPLE_SECRET_ARN);
     }
 
     @Test
@@ -89,8 +89,8 @@ public class TransactionTests extends TestBase {
         client.rollbackTransaction(transactionId);
 
         val request = captureRollbackTransactionRequest();
-        assertThat(request.getTransactionId()).isEqualTo(transactionId);
-        assertThat(request.getResourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
-        assertThat(request.getSecretArn()).isEqualTo(SAMPLE_SECRET_ARN);
+        assertThat(request.transactionId()).isEqualTo(transactionId);
+        assertThat(request.resourceArn()).isEqualTo(SAMPLE_RESOURCE_ARN);
+        assertThat(request.secretArn()).isEqualTo(SAMPLE_SECRET_ARN);
     }
 }

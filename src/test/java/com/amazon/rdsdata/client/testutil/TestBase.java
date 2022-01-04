@@ -15,15 +15,15 @@
 package com.amazon.rdsdata.client.testutil;
 
 import com.amazon.rdsdata.client.RdsData;
-import com.amazonaws.services.rdsdata.AWSRDSData;
-import com.amazonaws.services.rdsdata.model.BatchExecuteStatementRequest;
-import com.amazonaws.services.rdsdata.model.BeginTransactionRequest;
-import com.amazonaws.services.rdsdata.model.CommitTransactionRequest;
-import com.amazonaws.services.rdsdata.model.ExecuteStatementRequest;
-import com.amazonaws.services.rdsdata.model.RollbackTransactionRequest;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
+import software.amazon.awssdk.services.rdsdata.RdsDataClient;
+import software.amazon.awssdk.services.rdsdata.model.BatchExecuteStatementRequest;
+import software.amazon.awssdk.services.rdsdata.model.BeginTransactionRequest;
+import software.amazon.awssdk.services.rdsdata.model.CommitTransactionRequest;
+import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementRequest;
+import software.amazon.awssdk.services.rdsdata.model.RollbackTransactionRequest;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class TestBase {
     protected static final String SAMPLE_SECRET_ARN = "arn:secret";
 
     protected RdsData client;
-    protected AWSRDSData sdkClient = mock(AWSRDSData.class);
+    protected RdsDataClient sdkClient = mock(RdsDataClient.class);
 
     @BeforeEach
     void createClient() {

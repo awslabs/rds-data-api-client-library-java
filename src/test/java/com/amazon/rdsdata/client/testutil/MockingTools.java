@@ -14,16 +14,16 @@
  */
 package com.amazon.rdsdata.client.testutil;
 
-import com.amazonaws.services.rdsdata.AWSRDSData;
-import com.amazonaws.services.rdsdata.model.BeginTransactionRequest;
-import com.amazonaws.services.rdsdata.model.BeginTransactionResult;
-import com.amazonaws.services.rdsdata.model.ColumnMetadata;
-import com.amazonaws.services.rdsdata.model.ExecuteStatementRequest;
-import com.amazonaws.services.rdsdata.model.ExecuteStatementResult;
-import com.amazonaws.services.rdsdata.model.Field;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import software.amazon.awssdk.services.rdsdata.RdsDataClient;
+import software.amazon.awssdk.services.rdsdata.model.BeginTransactionRequest;
+import software.amazon.awssdk.services.rdsdata.model.BeginTransactionResponse;
+import software.amazon.awssdk.services.rdsdata.model.ColumnMetadata;
+import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementRequest;
+import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementResponse;
+import software.amazon.awssdk.services.rdsdata.model.Field;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,14 +37,14 @@ import static org.mockito.Mockito.when;
 
 @UtilityClass
 public class MockingTools {
-    public static void mockReturnValue(AWSRDSData mockClient,
+    public static void mockReturnValue(RdsDataClient mockClient,
                                        long numberOfRecordsUpdated,
                                        ColumnDefinition... columns) {
         mockReturnValues(mockClient, numberOfRecordsUpdated, asList(columns));
     }
 
     @SafeVarargs
-    public static void mockReturnValues(AWSRDSData mockClient,
+    public static void mockReturnValues(RdsDataClient mockClient,
                                         long numberOfRecordsUpdated,
                                         List<ColumnDefinition>... rows) {
         List<ColumnMetadata> metadataList = rows.length > 0 ? buildColumnMetadataList(rows[0]) : emptyList();
@@ -56,10 +56,11 @@ public class MockingTools {
                 .collect(toList());
 
         when(mockClient.executeStatement(any(ExecuteStatementRequest.class)))
-                .thenReturn(new ExecuteStatementResult()
-                        .withColumnMetadata(metadataList)
-                        .withRecords(recordsList)
-                        .withNumberOfRecordsUpdated(numberOfRecordsUpdated));
+                .thenReturn(ExecuteStatementResponse.builder()
+                    .columnMetadata(metadataList)
+                    .records(recordsList)
+                    .numberOfRecordsUpdated(numberOfRecordsUpdated)
+                    .build());
     }
 
     private List<ColumnMetadata> buildColumnMetadataList(List<ColumnDefinition> columns) {
@@ -69,24 +70,27 @@ public class MockingTools {
     }
 
     public static ColumnDefinition mockColumn(String name, Field field) {
-        val metadata = new ColumnMetadata()
-            .withName(name);
+        val metadata = ColumnMetadata.builder()
+            .name(name)
+            .build();
         return new ColumnDefinition(metadata, field);
     }
 
     public static ColumnDefinition mockColumn(String name, String label, Field field) {
-        val metadata = new ColumnMetadata()
-            .withName(name)
-            .withLabel(label);
+        val metadata = ColumnMetadata.builder()
+            .name(name)
+            .label(label)
+            .build();
         return new ColumnDefinition(metadata, field);
     }
 
-    public static void returnNullMetadataAndResultSet(AWSRDSData mockClient) {
+    public static void returnNullMetadataAndResultSet(RdsDataClient mockClient) {
         when(mockClient.executeStatement(any(ExecuteStatementRequest.class)))
-                .thenReturn(new ExecuteStatementResult()
-                        .withColumnMetadata((Collection) null)
-                        .withRecords((Collection) null)
-                        .withNumberOfRecordsUpdated(null));
+            .thenReturn(ExecuteStatementResponse.builder()
+                .columnMetadata((Collection) null)
+                .records((Collection) null)
+                .numberOfRecordsUpdated(null)
+                .build());
     }
 
     @Value
@@ -95,8 +99,10 @@ public class MockingTools {
         private Field field;
     }
 
-    public static void mockBeginTransaction(AWSRDSData mockClient, String transactionId) {
+    public static void mockBeginTransaction(RdsDataClient mockClient, String transactionId) {
         when(mockClient.beginTransaction(any(BeginTransactionRequest.class)))
-            .thenReturn(new BeginTransactionResult().withTransactionId(transactionId));
+            .thenReturn(BeginTransactionResponse.builder()
+                .transactionId(transactionId)
+                .build());
     }
 }

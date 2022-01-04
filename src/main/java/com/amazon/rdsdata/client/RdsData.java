@@ -14,18 +14,18 @@
  */
 package com.amazon.rdsdata.client;
 
-import com.amazonaws.services.rdsdata.AWSRDSData;
-import com.amazonaws.services.rdsdata.model.BatchExecuteStatementRequest;
-import com.amazonaws.services.rdsdata.model.BeginTransactionRequest;
-import com.amazonaws.services.rdsdata.model.CommitTransactionRequest;
-import com.amazonaws.services.rdsdata.model.DecimalReturnType;
-import com.amazonaws.services.rdsdata.model.ExecuteStatementRequest;
-import com.amazonaws.services.rdsdata.model.ResultSetOptions;
-import com.amazonaws.services.rdsdata.model.RollbackTransactionRequest;
-import com.amazonaws.services.rdsdata.model.SqlParameter;
 import lombok.Builder;
 import lombok.With;
 import lombok.val;
+import software.amazon.awssdk.services.rdsdata.RdsDataClient;
+import software.amazon.awssdk.services.rdsdata.model.BatchExecuteStatementRequest;
+import software.amazon.awssdk.services.rdsdata.model.BeginTransactionRequest;
+import software.amazon.awssdk.services.rdsdata.model.CommitTransactionRequest;
+import software.amazon.awssdk.services.rdsdata.model.DecimalReturnType;
+import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementRequest;
+import software.amazon.awssdk.services.rdsdata.model.ResultSetOptions;
+import software.amazon.awssdk.services.rdsdata.model.RollbackTransactionRequest;
+import software.amazon.awssdk.services.rdsdata.model.SqlParameter;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ import static java.util.stream.Collectors.toList;
 public class RdsData {
     static String ERROR_EMPTY_OR_NULL_SQL = "SQL parameter is null or empty";
 
-    private AWSRDSData sdkClient;
+    private RdsDataClient sdkClient;
     private String database;
     private String secretArn;
     private String resourceArn;
@@ -55,12 +55,13 @@ public class RdsData {
      * @return transaction ID
      */
     public String beginTransaction() {
-        val request = new BeginTransactionRequest()
-                .withDatabase(database)
-                .withResourceArn(resourceArn)
-                .withSecretArn(secretArn);
+        val request = BeginTransactionRequest.builder()
+            .database(database)
+            .resourceArn(resourceArn)
+            .secretArn(secretArn)
+            .build();
         val response = sdkClient.beginTransaction(request);
-        return response.getTransactionId();
+        return response.transactionId();
     }
 
     /**
@@ -68,10 +69,11 @@ public class RdsData {
      * @param transactionId transaction ID
      */
     public void commitTransaction(String transactionId) {
-        val request = new CommitTransactionRequest()
-                .withTransactionId(transactionId)
-                .withResourceArn(resourceArn)
-                .withSecretArn(secretArn);
+        val request = CommitTransactionRequest.builder()
+            .transactionId(transactionId)
+            .resourceArn(resourceArn)
+            .secretArn(secretArn)
+            .build();
         sdkClient.commitTransaction(request);
     }
 
@@ -80,10 +82,11 @@ public class RdsData {
      * @param transactionId transaction ID
      */
     public void rollbackTransaction(String transactionId) {
-        val request = new RollbackTransactionRequest()
-                .withTransactionId(transactionId)
-                .withResourceArn(resourceArn)
-                .withSecretArn(secretArn);
+        val request = RollbackTransactionRequest.builder()
+            .transactionId(transactionId)
+            .resourceArn(resourceArn)
+            .secretArn(secretArn)
+            .build();
         sdkClient.rollbackTransaction(request);
     }
 
@@ -120,34 +123,37 @@ public class RdsData {
     }
 
     ExecutionResult executeStatement(String transactionId, String sql, Map<String, Object> params, boolean continueAfterTimeout) {
-        val request = new ExecuteStatementRequest()
-                .withDatabase(database)
-                .withResourceArn(resourceArn)
-                .withSecretArn(secretArn)
-                .withSql(sql)
-                .withParameters(toSqlParameterList(params))
-                .withTransactionId(transactionId)
-                .withContinueAfterTimeout(continueAfterTimeout)
-                .withResultSetOptions(new ResultSetOptions()
-                        .withDecimalReturnType(DecimalReturnType.STRING))
-                .withIncludeResultMetadata(true);
+        val request = ExecuteStatementRequest.builder()
+            .database(database)
+            .resourceArn(resourceArn)
+            .secretArn(secretArn)
+            .sql(sql)
+            .parameters(toSqlParameterList(params))
+            .transactionId(transactionId)
+            .continueAfterTimeout(continueAfterTimeout)
+            .resultSetOptions(ResultSetOptions.builder()
+                .decimalReturnType(DecimalReturnType.STRING)
+                .build())
+            .includeResultMetadata(true)
+            .build();
 
         val response = sdkClient.executeStatement(request);
 
-        return new ExecutionResult(response.getColumnMetadata(),
-            response.getRecords(),
-            response.getNumberOfRecordsUpdated(),
+        return new ExecutionResult(response.columnMetadata(),
+            response.records(),
+            response.numberOfRecordsUpdated(),
             mappingOptions);
     }
 
     ExecutionResult batchExecuteStatement(String transactionId, String sql, List<Map<String, Object>> params) {
-        val request = new BatchExecuteStatementRequest()
-                .withDatabase(database)
-                .withResourceArn(resourceArn)
-                .withSecretArn(secretArn)
-                .withSql(sql)
-                .withTransactionId(transactionId)
-                .withParameterSets(toSqlParameterSets(params));
+        val request = BatchExecuteStatementRequest.builder()
+            .database(database)
+            .resourceArn(resourceArn)
+            .secretArn(secretArn)
+            .sql(sql)
+            .transactionId(transactionId)
+            .parameterSets(toSqlParameterSets(params))
+            .build();
         sdkClient.batchExecuteStatement(request);
         return new ExecutionResult(emptyList(), emptyList(), 0L, mappingOptions);
     }
@@ -162,14 +168,14 @@ public class RdsData {
         val parameterName = mapEntry.getKey();
         val value = mapEntry.getValue();
 
-        val parameter = new SqlParameter()
-                .withName(parameterName)
-                .withValue(TypeConverter.toField(value));
+        val parameterBuilder = SqlParameter.builder()
+            .name(parameterName)
+            .value(TypeConverter.toField(value));
 
         TypeConverter.getTypeHint(value)
-                .ifPresent(hint -> parameter.setTypeHint(hint.name()));
+                .ifPresent(hint -> parameterBuilder.typeHint(hint.name()));
 
-        return parameter;
+        return parameterBuilder.build();
     }
 
     private List<List<SqlParameter>> toSqlParameterSets(List<Map<String, Object>> params) {
