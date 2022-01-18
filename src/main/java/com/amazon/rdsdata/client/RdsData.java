@@ -43,7 +43,7 @@ public class RdsData {
     static String ERROR_EMPTY_OR_NULL_SQL = "SQL parameter is null or empty";
 
     private RdsDataClient sdkClient;
-    private String database;
+    @With private String database;
     private String secretArn;
     private String resourceArn;
 
